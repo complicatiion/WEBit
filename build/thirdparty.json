@@ -1,0 +1,22 @@
+{
+  "$comment": "Bundled third-party binaries (only Caddy). PHP, Mailpit and the VC++ runtime are downloaded by the app (Modules \u2192 Download). fetch-thirdparty.ps1 downloads and verifies, publish.ps1 bundles.",
+  "components": [
+    {
+      "id": "caddy",
+      "name": "Caddy",
+      "version": "2.11.4",
+      "license": "Apache-2.0",
+      "licenseFile": "licenses/third-party/CADDY.md",
+      "repository": "caddyserver/caddy",
+      "tag": "v{version}",
+      "asset": "caddy_{version}_windows_amd64.zip",
+      "checksums": "caddy_{version}_checksums.txt",
+      "target": "runtime/caddy",
+      "files": [
+        "caddy.exe",
+        "LICENSE",
+        "README.md"
+      ]
+    }
+  ]
+}
