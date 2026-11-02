@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>WEBit.Core</RootNamespace>
+    <AssemblyName>WEBit.Core</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="WEBit.Core.Tests" />
+  </ItemGroup>
+
+</Project>

@@ -1,0 +1,63 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <RootNamespace>WEBit.Service</RootNamespace>
+    <AssemblyName>WEBit.Service</AssemblyName>
+    <!-- Task Manager shows this as the process description -->
+    <AssemblyTitle>WEBit Service</AssemblyTitle>
+    <Description>WEBit web server service (sites, PHP, Mailpit)</Description>
+    <ApplicationIcon>..\WEBit.App\Assets\webit.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <ServerGarbageCollection>false</ServerGarbageCollection>
+    <InvariantGlobalization>false</InvariantGlobalization>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting" />
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" />
+    <!-- Export ZIPs with password (AES-256) -->
+    <PackageReference Include="SharpZipLib" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="WEBit.Service.Tests" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WEBit.Contracts\WEBit.Contracts.csproj" />
+    <ProjectReference Include="..\WEBit.Platform.Windows\WEBit.Platform.Windows.csproj" />
+  </ItemGroup>
+
+  <!-- Bundled web server (build/fetch-thirdparty.ps1 → runtime\caddy) is copied to bin\caddy. Other modules are downloaded in the app. -->
+  <ItemGroup>
+    <None Include="..\..\runtime\caddy\**\*" Exclude="..\..\runtime\caddy\**\.gitkeep;..\..\runtime\caddy\**\.version;..\..\runtime\caddy\caddy.exe" Link="bin\caddy\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <!-- Renamed so the process is recognizable in Task Manager -->
+    <None Include="..\..\runtime\caddy\caddy.exe" Condition="Exists('..\..\runtime\caddy\caddy.exe')" Link="bin\caddy\WEBit-Caddy.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!--
+    Caddy is not in the source package (binary from the official release). The first build on Windows
+    fetches it once (build\fetch-thirdparty.ps1, SHA-256 verified). Without internet the build continues
+    with a warning; the app can then install Caddy on the Dependencies page.
+    Skip with: dotnet build -p:WEBitSkipFetch=true
+  -->
+  <PropertyGroup>
+    <WEBitCaddyExe>$(MSBuildThisFileDirectory)..\..\runtime\caddy\caddy.exe</WEBitCaddyExe>
+  </PropertyGroup>
+  <Target Name="WEBitFetchCaddy" BeforeTargets="BeforeBuild"
+          Condition="'$(OS)' == 'Windows_NT' And '$(WEBitSkipFetch)' != 'true' And '$(DesignTimeBuild)' != 'true' And !Exists('$(WEBitCaddyExe)')">
+    <Message Importance="high" Text="WEBit: runtime\caddy\caddy.exe missing – fetching Caddy from the official GitHub release …" />
+    <Exec Command="powershell.exe -NoProfile -ExecutionPolicy Bypass -File &quot;$(MSBuildThisFileDirectory)..\..\build\fetch-thirdparty.ps1&quot; -Only caddy -Force"
+          ContinueOnError="true" Timeout="300000" />
+    <Warning Condition="!Exists('$(WEBitCaddyExe)')"
+             Text="WEBit: Caddy could not be fetched. Run build\fetch-thirdparty.ps1 or install it in the app (Dependencies → Caddy → Install)." />
+    <!-- Items were evaluated before the fetch: add the fresh files to this build. -->
+    <ItemGroup Condition="Exists('$(WEBitCaddyExe)')">
+      <None Include="..\..\runtime\caddy\caddy.exe" Link="bin\caddy\WEBit-Caddy.exe" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+      <None Include="..\..\runtime\caddy\LICENSE" Condition="Exists('..\..\runtime\caddy\LICENSE')" Link="bin\caddy\LICENSE" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+      <None Include="..\..\runtime\caddy\README.md" Condition="Exists('..\..\runtime\caddy\README.md')" Link="bin\caddy\README.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    </ItemGroup>
+  </Target>
+
+</Project>

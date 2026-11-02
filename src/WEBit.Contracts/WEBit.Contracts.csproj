@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <RootNamespace>WEBit.Contracts</RootNamespace>
+    <AssemblyName>WEBit.Contracts</AssemblyName>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WEBit.Core\WEBit.Core.csproj" />
+  </ItemGroup>
+
+</Project>
