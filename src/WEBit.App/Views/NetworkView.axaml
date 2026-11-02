@@ -1,0 +1,126 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.NetworkView">
+  <ScrollViewer>
+    <StackPanel Spacing="20">
+
+      <Grid ColumnDefinitions="*,*" Margin="-8,0">
+        <!-- Addresses & ranges -->
+        <Border Classes="card" Margin="8,0">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <PathIcon Data="{StaticResource IconLan}" Width="20" Height="20" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Classes="h2" Text="{DynamicResource HdrHost}" />
+              <Button Grid.Column="2" Classes="icon small" Command="{Binding RefreshCommand}" ToolTip.Tip="{DynamicResource TipRefresh}">
+                <PathIcon Data="{StaticResource IconRefresh}" />
+              </Button>
+            </Grid>
+            <Grid ColumnDefinitions="170,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Classes="form">
+              <TextBlock Classes="muted" Text="{DynamicResource LblHost}" />
+              <SelectableTextBlock Grid.Column="1" Text="{Binding MachineText}" />
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblSiteRange}" />
+              <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SiteRangeText}" />
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblInternalRange}" />
+              <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding InternalRangeText}" />
+              <TextBlock Grid.Row="3" Classes="muted" Text="{DynamicResource LblAdminApi}" />
+              <TextBlock Grid.Row="3" Grid.Column="1" Text="{Binding AdminPortText}" />
+              <TextBlock Grid.Row="4" Classes="muted" Text="{DynamicResource LblExcluded}" />
+              <TextBlock Grid.Row="4" Grid.Column="1" Text="{Binding ExcludedText}" TextWrapping="Wrap" />
+            </Grid>
+            <TextBlock Classes="section" Text="{DynamicResource HdrAddresses}" />
+            <ItemsControl ItemsSource="{Binding Addresses}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <!-- Fixed address column: adapter names (Ethernet, WLAN …) line up -->
+                  <Grid ColumnDefinitions="170,*,Auto" Margin="0,0,0,4">
+                    <TextBlock Classes="mono" Text="{Binding Address}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="1" Classes="muted small" Text="{Binding InterfaceName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <Button Grid.Column="2" Classes="icon small"
+                            Command="{Binding $parent[UserControl].DataContext.CopyAddressCommand}"
+                            CommandParameter="{Binding Address}"
+                            ToolTip.Tip="{DynamicResource TipCopy}">
+                      <PathIcon Data="{StaticResource IconCopy}" />
+                    </Button>
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <!-- Port check -->
+        <Border Grid.Column="1" Classes="card" Margin="8,0">
+          <DockPanel>
+          <!-- Buttons bottom right of the card -->
+          <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Classes="fixed" Command="{Binding SuggestPortNowCommand}">
+              <ctl:IconLabel Icon="{StaticResource IconMagnify}" Text="{DynamicResource BtnSuggestPort}" />
+            </Button>
+            <Button Classes="primary fixed" Command="{Binding CheckPortNowCommand}">
+              <ctl:IconLabel Icon="{StaticResource IconCheck}" Text="{DynamicResource BtnCheck}" />
+            </Button>
+          </StackPanel>
+          <StackPanel Spacing="12">
+            <StackPanel Orientation="Horizontal" Spacing="10">
+              <PathIcon Data="{StaticResource IconCheckCircle}" Width="20" Height="20" Foreground="{DynamicResource BrushAccentHover}" VerticalAlignment="Center" />
+              <TextBlock Classes="h2" Text="{DynamicResource HdrPortCheck}" />
+            </StackPanel>
+            <Grid ColumnDefinitions="*,140">
+              <StackPanel Margin="0,0,10,0">
+                <TextBlock Classes="label" Text="{DynamicResource LblAddress}" />
+                <ComboBox ItemsSource="{Binding AddressOptions}" SelectedItem="{Binding CheckAddress}" HorizontalAlignment="Stretch" />
+              </StackPanel>
+              <StackPanel Grid.Column="1">
+                <TextBlock Classes="label" Text="{DynamicResource LblPort}" />
+                <NumericUpDown Value="{Binding CheckPort}" Minimum="1" Maximum="65535" Increment="1" FormatString="0" />
+              </StackPanel>
+            </Grid>
+            <ItemsControl ItemsSource="{Binding CheckResults}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,6">
+                    <PathIcon Data="{Binding Icon}" Foreground="{Binding Brush}" Width="16" Height="16" Margin="0,1,8,0" VerticalAlignment="Top" />
+                    <TextBlock Grid.Column="1" Text="{Binding Text}" TextWrapping="Wrap" />
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+          </DockPanel>
+        </Border>
+      </Grid>
+
+      <!-- Ports in use -->
+      <Border Classes="card">
+        <StackPanel Spacing="12">
+          <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+            <PathIcon Data="{StaticResource IconDns}" Width="20" Height="20" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,10,0" />
+            <TextBlock Grid.Column="1" Classes="h2" Text="{DynamicResource HdrListeners}" />
+            <CheckBox Grid.Column="2" IsChecked="{Binding OnlyRelevant}" Content="{DynamicResource ChkOnlyRelevant}" Margin="0,0,12,0" VerticalAlignment="Center" />
+            <TextBox Grid.Column="3" Text="{Binding ListenerFilter}" Watermark="{DynamicResource WatermarkFilter}" Width="220" />
+          </Grid>
+          <TextBlock IsVisible="{Binding ListenerInfoMissing}" Classes="muted" Text="{DynamicResource ListenerInfoMissing}" />
+          <Grid ColumnDefinitions="200,*,90,*" Margin="0,4,0,0">
+            <TextBlock Classes="section column" Text="{DynamicResource ColEndpoint}" />
+            <TextBlock Grid.Column="1" Classes="section column" Text="{DynamicResource ColProcess}" />
+            <TextBlock Grid.Column="2" Classes="section column" Text="PID" />
+            <TextBlock Grid.Column="3" Classes="section column" Text="{DynamicResource ColNote}" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding Listeners}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Grid ColumnDefinitions="200,*,90,*" Margin="0,0,0,6">
+                  <TextBlock Classes="mono" Text="{Binding Endpoint}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="1" Text="{Binding Process}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="2" Classes="muted" Text="{Binding PidText}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="3" Classes="muted small" Text="{Binding AvoidReason}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                </Grid>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </Border>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

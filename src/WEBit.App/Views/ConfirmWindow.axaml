@@ -1,0 +1,32 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:WEBit.App.Controls"
+        x:Class="WEBit.App.Views.ConfirmWindow"
+        Icon="/Assets/webit.ico"
+        Width="500"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <Border Padding="24">
+    <!-- Icon, text and buttons centered; Cancel left of the main action -->
+    <StackPanel Spacing="14" HorizontalAlignment="Center">
+      <PathIcon x:Name="Glyph" Width="36" Height="36" HorizontalAlignment="Center" />
+      <TextBlock x:Name="HeaderText" Classes="h2" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" />
+      <TextBlock x:Name="MessageText" Classes="muted" TextWrapping="Wrap" TextAlignment="Center" HorizontalAlignment="Center" />
+      <CheckBox x:Name="OptionCheck" IsVisible="False" HorizontalAlignment="Center" />
+      <TextBox x:Name="InputBox" IsVisible="False" Width="320" HorizontalAlignment="Center" />
+      <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Center" Margin="0,6,0,0">
+        <Button x:Name="CancelButton" Click="OnCancel" IsCancel="True" Classes="fixed">
+          <ctl:IconLabel Icon="{StaticResource IconClose}" Text="{DynamicResource BtnCancel}" />
+        </Button>
+        <Button x:Name="SecondaryButton" Click="OnSecondary" IsVisible="False" Classes="fixed">
+          <ctl:IconLabel x:Name="SecondaryLabel" Icon="{StaticResource IconFolderOpen}" />
+        </Button>
+        <Button x:Name="ConfirmButton" Click="OnConfirm" Classes="primary fixed" IsDefault="True">
+          <ctl:IconLabel x:Name="ConfirmLabel" Icon="{StaticResource IconCheck}" />
+        </Button>
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</Window>

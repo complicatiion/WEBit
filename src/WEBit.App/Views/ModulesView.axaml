@@ -1,0 +1,117 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.ModulesView">
+  <DockPanel>
+    <!-- One click: download every missing module -->
+    <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="8" Margin="0,0,0,16" IsVisible="{Binding HasMissing}">
+      <Button Classes="primary" Command="{Binding DownloadMissingCommand}">
+        <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnDownloadMissing}" />
+      </Button>
+    </StackPanel>
+  <ScrollViewer>
+    <ItemsControl ItemsSource="{Binding Cards}">
+      <ItemsControl.ItemsPanel>
+        <ItemsPanelTemplate>
+          <WrapPanel />
+        </ItemsPanelTemplate>
+      </ItemsControl.ItemsPanel>
+      <ItemsControl.ItemTemplate>
+        <DataTemplate>
+          <Border Classes="card" Width="470" MinHeight="330" Margin="0,0,16,16">
+            <!-- Buttons always sit at the bottom edge of the card -->
+            <DockPanel>
+              <!-- Buttons at the bottom edge, right-aligned: download/update/runtime above log, folder, restart, open -->
+              <StackPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right" Margin="0,12,0,0" Spacing="6" IsVisible="{Binding IsAvailable}">
+                <!-- MariaDB: root password, new database, backup -->
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" IsVisible="{Binding ShowDatabaseActions}">
+                  <Button Command="{Binding CopyPasswordCommand}" ToolTip.Tip="{DynamicResource TipCopyDbPassword}">
+                    <ctl:IconLabel Icon="{StaticResource IconKey}" Text="{DynamicResource BtnCopyPassword}" />
+                  </Button>
+                  <Button Command="{Binding OpenAdminerCommand}" IsVisible="{Binding ShowAdminer}" ToolTip.Tip="{DynamicResource TipOpenAdminer}">
+                    <ctl:IconLabel Icon="{StaticResource IconOpenInNew}" Text="Adminer" />
+                  </Button>
+                  <Button Command="{Binding BackupCommand}">
+                    <ctl:IconLabel Icon="{StaticResource IconSave}" Text="{DynamicResource BtnBackup}" />
+                  </Button>
+                  <Button Classes="primary" Command="{Binding CreateDatabaseCommand}">
+                    <ctl:IconLabel Icon="{StaticResource IconPlus}" Text="{DynamicResource BtnCreateDatabase}" />
+                  </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                  <Button Classes="fixed" Command="{Binding DownloadCommand}" IsVisible="{Binding ShowUpdate}" ToolTip.Tip="{DynamicResource TipUpdateModule}">
+                    <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnUpdateModule}" />
+                  </Button>
+                  <Button Classes="primary fixed" Command="{Binding InstallVcRuntimeCommand}" IsVisible="{Binding NeedsVcRuntime}">
+                    <ctl:IconLabel Icon="{StaticResource IconShield}" Text="{DynamicResource BtnInstallVcRuntime}" />
+                  </Button>
+                  <Button Classes="primary fixed" Command="{Binding DownloadCommand}" IsVisible="{Binding ShowDownload}">
+                    <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnDownload}" />
+                  </Button>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                  <Button Command="{Binding ShowLogCommand}">
+                    <ctl:IconLabel Icon="{StaticResource IconLog}" Text="{DynamicResource BtnLog}" />
+                  </Button>
+                  <Button Command="{Binding OpenFolderCommand}" IsEnabled="{Binding HasPath}">
+                    <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="{DynamicResource BtnOpenFolder}" />
+                  </Button>
+                  <Button Command="{Binding RestartCommand}" IsEnabled="{Binding CanRestart}">
+                    <ctl:IconLabel Icon="{StaticResource IconRestart}" Text="{DynamicResource BtnRestart}" />
+                  </Button>
+                  <Button Classes="primary" Command="{Binding OpenCommand}" IsVisible="{Binding HasUrl}">
+                    <ctl:IconLabel Icon="{StaticResource IconOpenInNew}" Text="{DynamicResource BtnOpen}" />
+                  </Button>
+                </StackPanel>
+              </StackPanel>
+            <StackPanel Spacing="12">
+
+              <!-- Header: icon, name, state, switch -->
+              <Grid ColumnDefinitions="Auto,*,Auto">
+                <PathIcon Data="{Binding Icon}" Width="24" Height="24" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,12,0" />
+                <StackPanel Grid.Column="1" Spacing="2" VerticalAlignment="Center">
+                  <TextBlock Classes="h3" Text="{Binding Name}" />
+                  <StackPanel Orientation="Horizontal" Spacing="6">
+                    <Ellipse Width="8" Height="8" Fill="{Binding StateBrush}" VerticalAlignment="Center" />
+                    <TextBlock Classes="small" Text="{Binding StateText}" Foreground="{Binding StateBrush}" />
+                  </StackPanel>
+                </StackPanel>
+                <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsOn}" IsEnabled="{Binding CanToggle}" IsVisible="{Binding ShowToggle}"
+                              OnContent="" OffContent="" VerticalAlignment="Center" />
+              </Grid>
+
+              <TextBlock Classes="muted small" Text="{Binding Description}" TextWrapping="Wrap" />
+
+              <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto" Classes="form" IsVisible="{Binding IsAvailable}">
+                <TextBlock Classes="muted" Text="{DynamicResource LblVersion}" />
+                <TextBlock Grid.Column="1" Text="{Binding Version}" />
+                <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblEndpoint}" />
+                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding Endpoint}" />
+                <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblLicense}" />
+                <TextBlock Grid.Row="2" Grid.Column="1" Text="{Binding License}" />
+              </Grid>
+              <TextBlock Classes="small" Text="{Binding License}" Foreground="{DynamicResource BrushTextDisabled}" IsVisible="{Binding IsPlanned}" />
+
+              <Border IsVisible="{Binding HasMessage}" Background="{DynamicResource BrushDangerSoft}" CornerRadius="6" Padding="10,6">
+                <TextBlock Classes="small" Text="{Binding Message}" TextWrapping="Wrap" Foreground="{DynamicResource BrushDanger}" />
+              </Border>
+
+              <!-- Download progress / result -->
+              <StackPanel Spacing="6" IsVisible="{Binding IsDownloading}">
+                <ProgressBar Minimum="0" Maximum="100" Value="{Binding DownloadPercent}" IsIndeterminate="{Binding DownloadIndeterminate}" Height="6" />
+                <TextBlock Classes="muted small" Text="{Binding DownloadText}" IsVisible="{Binding HasDownloadText}" />
+              </StackPanel>
+              <Border IsVisible="{Binding DownloadFailed}" Background="{DynamicResource BrushDangerSoft}" CornerRadius="6" Padding="10,6">
+                <TextBlock Classes="small" Text="{Binding DownloadError}" TextWrapping="Wrap" Foreground="{DynamicResource BrushDanger}" />
+              </Border>
+
+
+            </StackPanel>
+            </DockPanel>
+          </Border>
+        </DataTemplate>
+      </ItemsControl.ItemTemplate>
+    </ItemsControl>
+  </ScrollViewer>
+  </DockPanel>
+</UserControl>

@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:WEBit.App.Controls"
+        x:Class="WEBit.App.Views.TemplateWindow"
+        Icon="/Assets/webit.ico"
+        Width="520"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <Border Padding="24">
+    <StackPanel Spacing="12">
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <PathIcon x:Name="Glyph" Width="30" Height="30" Foreground="{DynamicResource BrushAccentHover}" />
+        <TextBlock x:Name="HeaderText" Classes="h2" />
+      </StackPanel>
+      <TextBlock x:Name="InfoText" Classes="muted" TextWrapping="Wrap" />
+
+      <StackPanel>
+        <TextBlock Classes="label" Text="{DynamicResource LblName}" />
+        <TextBox x:Name="NameBox" />
+      </StackPanel>
+      <StackPanel x:Name="AdminPanel" Spacing="12">
+        <StackPanel>
+          <TextBlock Classes="label" Text="{DynamicResource LblAdminUser}" />
+          <TextBox x:Name="UserBox" Text="admin" />
+        </StackPanel>
+        <StackPanel>
+          <TextBlock Classes="label" Text="{DynamicResource LblAdminEmail}" />
+          <TextBox x:Name="EmailBox" Watermark="admin@webit.test" />
+        </StackPanel>
+      </StackPanel>
+
+      <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right" Margin="0,8,0,0">
+        <Button Click="OnCancel" IsCancel="True" Classes="fixed">
+          <ctl:IconLabel Icon="{StaticResource IconClose}" Text="{DynamicResource BtnCancel}" />
+        </Button>
+        <Button Click="OnCreate" Classes="primary fixed" IsDefault="True">
+          <ctl:IconLabel Icon="{StaticResource IconPlus}" Text="{DynamicResource BtnCreate}" />
+        </Button>
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</Window>

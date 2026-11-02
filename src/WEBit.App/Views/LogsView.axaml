@@ -1,0 +1,47 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.LogsView">
+  <DockPanel>
+    <!-- Source list shrinks and the check box text wraps on narrow screens; buttons stay visible -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto,Auto" Margin="0,0,0,14">
+      <StackPanel Margin="0,0,12,0" MaxWidth="360" HorizontalAlignment="Left">
+        <TextBlock Classes="label" Text="{DynamicResource LblLogSource}" />
+        <ComboBox ItemsSource="{Binding Sources}" SelectedItem="{Binding SelectedSource}" MinWidth="160" HorizontalAlignment="Stretch" />
+      </StackPanel>
+      <StackPanel Grid.Column="1" Margin="0,0,12,0">
+        <TextBlock Classes="label" Text="{DynamicResource LblLines}" />
+        <ComboBox ItemsSource="{Binding LineOptions}" SelectedItem="{Binding SelectedLines}" MinWidth="100" />
+      </StackPanel>
+      <CheckBox Grid.Column="2" IsChecked="{Binding AutoRefresh}" VerticalAlignment="Bottom" Margin="0,0,12,4" MaxWidth="150">
+        <TextBlock Text="{DynamicResource ChkAutoRefresh}" TextWrapping="Wrap" />
+      </CheckBox>
+      <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="8" VerticalAlignment="Bottom">
+        <Button Command="{Binding OpenFolderCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="{DynamicResource BtnOpenFolder}" />
+        </Button>
+        <Button Command="{Binding CopyAllCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconCopy}" Text="{DynamicResource BtnCopy}" />
+        </Button>
+        <Button Classes="primary" Command="{Binding LoadCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconRefresh}" Text="{DynamicResource BtnRefresh}" />
+        </Button>
+      </StackPanel>
+    </Grid>
+
+    <TextBlock DockPanel.Dock="Bottom" Classes="muted small" Text="{Binding FilePath}" Margin="0,8,0,0" TextTrimming="CharacterEllipsis" />
+
+    <Border Classes="card" Padding="4">
+      <TextBox Text="{Binding Text}"
+               IsReadOnly="True"
+               AcceptsReturn="True"
+               TextWrapping="NoWrap"
+               FontFamily="{DynamicResource MonoFont}"
+               FontSize="12"
+               BorderThickness="0"
+               Background="Transparent"
+               ScrollViewer.HorizontalScrollBarVisibility="Auto"
+               ScrollViewer.VerticalScrollBarVisibility="Auto" />
+    </Border>
+  </DockPanel>
+</UserControl>

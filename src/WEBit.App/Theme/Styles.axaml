@@ -1,0 +1,379 @@
+<Styles xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:WEBit.App.Controls">
+
+  <!-- ===================================================== Base -->
+  <Style Selector="Window">
+    <Setter Property="Background" Value="{DynamicResource BrushBgApp}" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
+  </Style>
+
+  <Style Selector="TextBlock.h1">
+    <Setter Property="FontSize" Value="22" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.h2">
+    <Setter Property="FontSize" Value="17" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.h3">
+    <Setter Property="FontSize" Value="15" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <!-- Headings and icons sit on one line with neighbours that are taller (buttons, text boxes) -->
+  <Style Selector="TextBlock.h2, TextBlock.h3">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="PathIcon">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="TextBlock.muted">
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
+  </Style>
+  <Style Selector="TextBlock.small">
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="TextBlock.mono, SelectableTextBlock.mono">
+    <Setter Property="FontFamily" Value="{DynamicResource MonoFont}" />
+  </Style>
+  <Style Selector="TextBlock.kpi">
+    <Setter Property="FontSize" Value="30" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+  </Style>
+  <Style Selector="TextBlock.danger">
+    <Setter Property="Foreground" Value="{DynamicResource BrushDanger}" />
+  </Style>
+  <Style Selector="TextBlock.accent">
+    <Setter Property="Foreground" Value="{DynamicResource BrushAccent}" />
+  </Style>
+  <Style Selector="TextBlock.section">
+    <Setter Property="FontSize" Value="11" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
+    <Setter Property="LetterSpacing" Value="0.6" />
+  </Style>
+  <!-- Table column headings -->
+  <Style Selector="TextBlock.section.column">
+    <Setter Property="Foreground" Value="{DynamicResource BrushAccentHover}" />
+  </Style>
+
+  <!-- ===================================================== Surfaces -->
+  <Style Selector="Border.card">
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceCard}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BrushBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="10" />
+    <Setter Property="Padding" Value="18" />
+  </Style>
+  <Style Selector="Border.pill">
+    <Setter Property="CornerRadius" Value="999" />
+    <Setter Property="Padding" Value="10,3" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <!-- State/kind pill with fixed width: identical on every card -->
+  <Style Selector="Border.statepill">
+    <Setter Property="CornerRadius" Value="999" />
+    <Setter Property="Padding" Value="10,3" />
+    <Setter Property="MinWidth" Value="118" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Border.statepill > TextBlock">
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="FontSize" Value="12" />
+  </Style>
+  <Style Selector="Border.badge">
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="8,2" />
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceRaised}" />
+  </Style>
+  <Style Selector="Border.toast">
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceRaised}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BrushAccent}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="Padding" Value="14,10" />
+    <Setter Property="BoxShadow" Value="0 6 24 0 #66000000" />
+  </Style>
+  <Style Selector="Border.toast PathIcon.toastIcon">
+    <Setter Property="Foreground" Value="{DynamicResource BrushAccentHover}" />
+    <Setter Property="Data" Value="{StaticResource IconInfo}" />
+  </Style>
+  <Style Selector="Border.toast.error">
+    <Setter Property="BorderBrush" Value="{DynamicResource BrushDanger}" />
+  </Style>
+  <Style Selector="Border.toast.error PathIcon.toastIcon">
+    <Setter Property="Foreground" Value="{DynamicResource BrushDanger}" />
+    <Setter Property="Data" Value="{StaticResource IconAlertCircle}" />
+  </Style>
+  <!-- Menus (also the tray menu): clearly visible hover / keyboard selection -->
+  <Style Selector="MenuItem:pointerover /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{DynamicResource BrushMenuHover}" />
+  </Style>
+  <Style Selector="MenuItem:selected /template/ Border#PART_LayoutRoot">
+    <Setter Property="Background" Value="{DynamicResource BrushMenuHover}" />
+  </Style>
+  <Style Selector="MenuItem:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
+  </Style>
+
+  <!-- Uniform action buttons in cards (same width, so rows line up) -->
+  <Style Selector="Button.fixed">
+    <Setter Property="MinWidth" Value="160" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Offline card: uniform, centered buttons -->
+  <Style Selector="Button.offline">
+    <Setter Property="Width" Value="250" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Border.divider">
+    <Setter Property="Height" Value="1" />
+    <Setter Property="Background" Value="{DynamicResource BrushBorder}" />
+  </Style>
+
+  <!-- ===================================================== IconLabel -->
+  <Style Selector="ctl|IconLabel">
+    <Setter Property="Template">
+      <ControlTemplate>
+        <StackPanel Orientation="Horizontal" Spacing="8">
+          <PathIcon Data="{TemplateBinding Icon}"
+                    Width="{TemplateBinding IconSize}"
+                    Height="{TemplateBinding IconSize}"
+                    Foreground="{TemplateBinding Foreground}"
+                    VerticalAlignment="Center" />
+          <TextBlock Text="{TemplateBinding Text}" VerticalAlignment="Center" />
+        </StackPanel>
+      </ControlTemplate>
+    </Setter>
+  </Style>
+
+  <!-- ===================================================== Buttons -->
+  <Style Selector="Button">
+    <Setter Property="CornerRadius" Value="6" />
+    <Setter Property="Padding" Value="14,7" />
+  </Style>
+
+  <!-- Main action: filled accent (strong variant for contrast ≥ 4.5:1) -->
+  <Style Selector="Button.primary">
+    <Setter Property="Background" Value="{DynamicResource BrushAccentStrong}" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <Style Selector="Button.primary:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushAccent}" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <Style Selector="Button.primary:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushAccentStrong}" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <Style Selector="Button.primary:disabled /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceRaised}" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextDisabled}" />
+  </Style>
+
+  <!-- Destructive main action -->
+  <Style Selector="Button.danger">
+    <Setter Property="Background" Value="#B8434D" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <!-- Start actions: green -->
+  <Style Selector="Button.success">
+    <Setter Property="Background" Value="#2C8A5E" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <Style Selector="Button.success:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#35A570" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <Style Selector="Button.success:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#24734E" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+  <Style Selector="Button.danger:pressed /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="#9C3640" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Info pill (dashboard facts) -->
+  <Style Selector="Border.info">
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceRaised}" />
+    <Setter Property="BorderBrush" Value="{DynamicResource BrushBorder}" />
+    <Setter Property="BorderThickness" Value="1" />
+    <Setter Property="CornerRadius" Value="12" />
+    <Setter Property="Padding" Value="10,3" />
+    <Setter Property="HorizontalAlignment" Value="Left" />
+  </Style>
+
+  <Style Selector="Button.danger:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushDanger}" />
+    <Setter Property="Foreground" Value="#FFFFFF" />
+  </Style>
+
+  <!-- Color chip of the site editor: selected = accent ring -->
+  <Style Selector="Button.selected">
+    <Setter Property="BorderBrush" Value="{DynamicResource BrushAccentHover}" />
+    <Setter Property="BorderThickness" Value="3" />
+  </Style>
+  <Style Selector="Button.selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="BorderBrush" Value="{DynamicResource BrushAccentHover}" />
+    <Setter Property="BorderThickness" Value="3" />
+  </Style>
+
+  <!-- Icon-only button (cards, toolbars) -->
+  <Style Selector="Button.icon">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="7" />
+    <Setter Property="Width" Value="34" />
+    <Setter Property="Height" Value="34" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Button.icon PathIcon">
+    <Setter Property="Width" Value="18" />
+    <Setter Property="Height" Value="18" />
+  </Style>
+  <Style Selector="Button.icon:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceRaised}" />
+  </Style>
+  <Style Selector="Button.icon.small">
+    <Setter Property="Width" Value="28" />
+    <Setter Property="Height" Value="28" />
+    <Setter Property="Padding" Value="5" />
+  </Style>
+  <Style Selector="Button.icon.small PathIcon">
+    <Setter Property="Width" Value="15" />
+    <Setter Property="Height" Value="15" />
+  </Style>
+
+  <!-- Logo button (toggles the sidebar) -->
+  <Style Selector="Button.logo">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="8,6" />
+    <Setter Property="CornerRadius" Value="8" />
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+    <Setter Property="HorizontalContentAlignment" Value="Left" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.logo:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceRaised}" />
+  </Style>
+
+  <!-- Language / flag item -->
+  <Style Selector="Image.flag">
+    <Setter Property="Width" Value="22" />
+    <Setter Property="Height" Value="15" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Link button (URLs) -->
+  <Style Selector="Button.link">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushAccentHover}" />
+    <Setter Property="Cursor" Value="Hand" />
+  </Style>
+  <Style Selector="Button.link:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushSecondary}" />
+  </Style>
+
+  <!-- ===================================================== Navigation -->
+  <Style Selector="ListBox.nav">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem">
+    <Setter Property="Padding" Value="12,9" />
+    <Setter Property="Margin" Value="0,1" />
+    <Setter Property="CornerRadius" Value="8" />
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushAccentSoft}" />
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextPrimary}" />
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem:selected PathIcon">
+    <Setter Property="Foreground" Value="{DynamicResource BrushAccentHover}" />
+  </Style>
+  <Style Selector="ListBox.nav ListBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+    <Setter Property="Background" Value="{DynamicResource BrushSurfaceRaised}" />
+  </Style>
+
+  <!-- Collapsed sidebar: logo centered in the narrow bar -->
+  <Style Selector="Border.sidebar.collapsed Button.logo">
+    <Setter Property="Padding" Value="4" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Collapsed sidebar: square icon buttons (1:1) -->
+  <Style Selector="Border.sidebar.collapsed ListBox.nav ListBoxItem">
+    <Setter Property="Width" Value="44" />
+    <Setter Property="Height" Value="44" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="HorizontalAlignment" Value="Center" />
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
+  </Style>
+
+  <!-- Table rows -->
+  <Style Selector="ListBox.rows">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+  </Style>
+  <Style Selector="ListBox.rows ListBoxItem">
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+
+  <!-- ===================================================== Inputs -->
+  <Style Selector="TextBox">
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+  <Style Selector="ComboBox">
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+  <Style Selector="NumericUpDown">
+    <Setter Property="CornerRadius" Value="6" />
+  </Style>
+  <Style Selector="TextBlock.label">
+    <Setter Property="Foreground" Value="{DynamicResource BrushTextSecondary}" />
+    <Setter Property="FontSize" Value="12" />
+    <Setter Property="Margin" Value="0,0,0,4" />
+  </Style>
+
+  <!-- Form grid row spacing -->
+  <Style Selector="Grid.form > TextBlock, Grid.form > SelectableTextBlock, Grid.form > StackPanel, Grid.form > TextBox, Grid.form > ComboBox, Grid.form > NumericUpDown, Grid.form > CheckBox, Grid.form > Grid, Grid.form > ToggleSwitch, Grid.form > Border">
+    <Setter Property="Margin" Value="0,0,0,10" />
+  </Style>
+  <!-- Settings rows: label left, control right in a fixed column; right edges line up -->
+  <Style Selector="Grid.settings > TextBlock, Grid.settings > ComboBox, Grid.settings > ToggleSwitch, Grid.settings > NumericUpDown, Grid.settings > TextBox, Grid.settings > Grid, Grid.settings > StackPanel, Grid.settings > Border">
+    <Setter Property="Margin" Value="0,0,0,10" />
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+  <Style Selector="Grid.settings > ToggleSwitch">
+    <Setter Property="HorizontalAlignment" Value="Right" />
+    <Setter Property="MinWidth" Value="0" />
+  </Style>
+  <Style Selector="Grid.settings > NumericUpDown">
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+  </Style>
+  <Style Selector="Grid.settings > TextBox">
+    <Setter Property="HorizontalAlignment" Value="Stretch" />
+  </Style>
+
+  <Style Selector="Grid.form > TextBlock.muted">
+    <Setter Property="VerticalAlignment" Value="Center" />
+  </Style>
+
+  <!-- Editor tabs -->
+  <Style Selector="TabItem">
+    <Setter Property="FontSize" Value="14" />
+    <Setter Property="MinHeight" Value="36" />
+    <Setter Property="Padding" Value="12,0" />
+  </Style>
+
+</Styles>

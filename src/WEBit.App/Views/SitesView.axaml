@@ -1,0 +1,183 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.SitesView">
+  <DockPanel>
+
+    <!-- Toolbar -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,18">
+      <TextBox Text="{Binding Search}" Watermark="{DynamicResource WatermarkSearchSites}" MaxWidth="380" HorizontalAlignment="Left" MinWidth="280">
+        <TextBox.InnerLeftContent>
+          <PathIcon Data="{StaticResource IconMagnify}" Width="16" Height="16" Margin="10,0,0,0" Opacity="0.7" />
+        </TextBox.InnerLeftContent>
+      </TextBox>
+      <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+        <Button Classes="danger" Command="{Binding StopAllCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconStopCircle}" Text="{DynamicResource BtnStopAll}" />
+        </Button>
+        <Button Classes="success" Command="{Binding StartAllCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconPlayCircle}" Text="{DynamicResource BtnStartAll}" />
+        </Button>
+        <ProgressBar IsIndeterminate="True" Width="80" MinWidth="0" IsVisible="{Binding IsCreating}" VerticalAlignment="Center" />
+        <!-- Templates: WordPress (WP-CLI) and Laravel (Composer) -->
+        <Button IsEnabled="{Binding !IsCreating}">
+          <ctl:IconLabel Icon="{StaticResource IconPackage}" Text="{DynamicResource BtnTemplate}" />
+          <Button.Flyout>
+            <MenuFlyout Placement="BottomEdgeAlignedRight">
+              <MenuItem Header="WordPress" Command="{Binding NewWordPressCommand}">
+                <MenuItem.Icon><PathIcon Data="{StaticResource IconWordpress}" /></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="Laravel" Command="{Binding NewLaravelCommand}">
+                <MenuItem.Icon><PathIcon Data="{StaticResource IconPackage}" /></MenuItem.Icon>
+              </MenuItem>
+            </MenuFlyout>
+          </Button.Flyout>
+        </Button>
+        <Button Classes="primary" Command="{Binding NewSiteCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconPlus}" Text="{DynamicResource BtnNewSite}" />
+        </Button>
+      </StackPanel>
+    </Grid>
+
+    <Grid>
+      <!-- Empty state -->
+      <Border Classes="card" IsVisible="{Binding HasNoSites}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="560" Padding="32">
+        <StackPanel Spacing="12">
+          <PathIcon Data="{StaticResource IconWeb}" Width="44" Height="44" Foreground="{DynamicResource BrushAccent}" HorizontalAlignment="Center" />
+          <TextBlock Classes="h2" Text="{DynamicResource EmptySitesTitle}" HorizontalAlignment="Center" />
+        </StackPanel>
+      </Border>
+
+      <TextBlock IsVisible="{Binding HasNoMatches}" Classes="muted" Text="{DynamicResource NoMatches}" HorizontalAlignment="Center" Margin="0,40,0,0" />
+
+      <!-- Cards -->
+      <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding VisibleCards}">
+          <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+              <WrapPanel />
+            </ItemsPanelTemplate>
+          </ItemsControl.ItemsPanel>
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border Classes="card" Width="352" Margin="0,0,16,16" Padding="0" ClipToBounds="True">
+                <Grid ColumnDefinitions="5,*">
+                  <Border Background="{Binding ColorBrush}" CornerRadius="10,0,0,10" />
+                  <StackPanel Grid.Column="1" Margin="16,14,12,10" Spacing="9">
+
+                    <!-- Header -->
+                    <Grid ColumnDefinitions="*,Auto,Auto">
+                      <TextBlock Classes="h3" Text="{Binding Name}" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" ToolTip.Tip="{Binding Name}" />
+                      <ToggleSwitch Grid.Column="2" IsChecked="{Binding IsOn}" OnContent="" OffContent="" VerticalAlignment="Center" Margin="8,0,0,0" ToolTip.Tip="{Binding ToggleRunTip}" />
+                      <Border Grid.Column="1" Classes="pill" Background="{Binding StateBackground}" Margin="8,0,0,0">
+                        <StackPanel Orientation="Horizontal" Spacing="6">
+                          <Ellipse Width="8" Height="8" Fill="{Binding StateBrush}" VerticalAlignment="Center" />
+                          <TextBlock Classes="small" Text="{Binding StateText}" Foreground="{Binding StateBrush}" VerticalAlignment="Center" />
+                        </StackPanel>
+                      </Border>
+                    </Grid>
+
+                    <TextBlock Classes="muted small" Text="{Binding Description}" TextTrimming="CharacterEllipsis" IsVisible="{Binding HasDescription}" />
+
+                    <!-- Badges -->
+                    <StackPanel Orientation="Horizontal" Spacing="6">
+                      <Border Classes="badge"><TextBlock Classes="small" Text="{Binding TypeText}" /></Border>
+                      <Border Classes="badge" IsVisible="{Binding HasCharsetBadge}"><TextBlock Classes="small" Text="{Binding CharsetText}" /></Border>
+                      <Border Classes="badge" IsVisible="{Binding IsApp}" ToolTip.Tip="{Binding AppCommandTip}"><TextBlock Classes="small" Text="{Binding AppModeText}" /></Border>
+                      <Border Classes="badge" Background="{DynamicResource BrushAccentSoft}" IsVisible="{Binding IsLive}" ToolTip.Tip="{DynamicResource TipLiveReload}">
+                        <StackPanel Orientation="Horizontal" Spacing="5">
+                          <Ellipse Width="7" Height="7" Fill="{DynamicResource BrushSecondary}" VerticalAlignment="Center" />
+                          <TextBlock Classes="small" Text="Live" Foreground="{DynamicResource BrushAccentHover}" />
+                        </StackPanel>
+                      </Border>
+                    </StackPanel>
+
+                    <!-- URL -->
+                    <Grid ColumnDefinitions="Auto,*,Auto" IsVisible="{Binding HasUrl}">
+                      <PathIcon Data="{StaticResource IconLink}" Width="15" Height="15" Foreground="{DynamicResource BrushAccentHover}" VerticalAlignment="Center" />
+                      <Button Grid.Column="1" Classes="link" Margin="8,0,4,0" Command="{Binding OpenCommand}" ToolTip.Tip="{DynamicResource TipOpenBrowser}" HorizontalAlignment="Left">
+                        <TextBlock Text="{Binding PrimaryUrl}" TextTrimming="CharacterEllipsis" />
+                      </Button>
+                      <Button Grid.Column="2" Classes="icon small" Command="{Binding CopyUrlCommand}" ToolTip.Tip="{DynamicResource TipCopyUrl}">
+                        <PathIcon Data="{StaticResource IconCopy}" />
+                      </Button>
+                    </Grid>
+
+                    <!-- Folder -->
+                    <Grid ColumnDefinitions="Auto,*">
+                      <PathIcon Data="{StaticResource IconFolder}" Width="15" Height="15" Opacity="0.7" VerticalAlignment="Center" />
+                      <TextBlock Grid.Column="1" Margin="8,0,0,0" Classes="muted small" Text="{Binding RootDisplay}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding RootDisplay}" VerticalAlignment="Center" />
+                    </Grid>
+
+                    <!-- Error -->
+                    <Border IsVisible="{Binding HasMessage}" Background="{DynamicResource BrushDangerSoft}" CornerRadius="6" Padding="10,6">
+                      <TextBlock Classes="small" Text="{Binding Message}" TextWrapping="Wrap" Foreground="{DynamicResource BrushDanger}" />
+                    </Border>
+
+                    <Border Classes="divider" Margin="0,2,0,0" />
+
+                    <!-- Actions -->
+                    <Grid ColumnDefinitions="*,Auto">
+                      <StackPanel Orientation="Horizontal" Spacing="2">
+                        <Button Classes="icon" Command="{Binding OpenCommand}" ToolTip.Tip="{DynamicResource TipOpenBrowser}">
+                          <PathIcon Data="{StaticResource IconOpenInNew}" />
+                        </Button>
+                        <Button Classes="icon" Command="{Binding EditCommand}" ToolTip.Tip="{DynamicResource TipEdit}">
+                          <PathIcon Data="{StaticResource IconPencil}" />
+                        </Button>
+                        <Button Classes="icon" Command="{Binding CopyMessageCommand}" ToolTip.Tip="{DynamicResource TipCopyMessage}">
+                          <PathIcon Data="{StaticResource IconMessage}" />
+                        </Button>
+                        <Button Classes="icon" Command="{Binding OpenFolderCommand}" ToolTip.Tip="{DynamicResource TipOpenFolder}">
+                          <PathIcon Data="{StaticResource IconFolderOpen}" />
+                        </Button>
+                        <Button Classes="icon" Command="{Binding ShowLogsCommand}" ToolTip.Tip="{DynamicResource TipShowLogs}">
+                          <PathIcon Data="{StaticResource IconLog}" />
+                        </Button>
+                      </StackPanel>
+                      <Button Grid.Column="1" Classes="icon" ToolTip.Tip="{DynamicResource TipMore}">
+                        <PathIcon Data="{StaticResource IconDotsVertical}" />
+                        <Button.Flyout>
+                          <MenuFlyout Placement="BottomEdgeAlignedRight">
+                            <MenuItem Header="{DynamicResource MenuDuplicate}" Command="{Binding DuplicateCommand}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconDuplicate}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource MenuCopyUrl}" Command="{Binding CopyUrlCommand}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconCopy}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource MenuQr}" Command="{Binding ShowQrCommand}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconQrcode}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource MenuExport}" Command="{Binding ExportCommand}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconExport}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource MenuRestartApp}" Command="{Binding RestartAppCommand}" IsVisible="{Binding IsApp}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconRestart}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource MenuWpAdmin}" Command="{Binding OpenWpAdminCommand}" IsVisible="{Binding IsWordPress}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconWordpress}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource MenuOpenDatabase}" Command="{Binding OpenDatabaseCommand}" IsVisible="{Binding HasDatabase}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconDatabase}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <MenuItem Header="{DynamicResource MenuInstallApp}" Command="{Binding InstallAppCommand}" IsVisible="{Binding CanInstallPackages}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconDownload}" /></MenuItem.Icon>
+                            </MenuItem>
+                            <Separator />
+                            <MenuItem Header="{DynamicResource MenuDelete}" Command="{Binding DeleteCommand}" Foreground="{DynamicResource BrushDanger}">
+                              <MenuItem.Icon><PathIcon Data="{StaticResource IconDelete}" Foreground="{DynamicResource BrushDanger}" /></MenuItem.Icon>
+                            </MenuItem>
+                          </MenuFlyout>
+                        </Button.Flyout>
+                      </Button>
+                    </Grid>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+  </DockPanel>
+</UserControl>

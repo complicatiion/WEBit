@@ -1,0 +1,123 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.DatabasesView">
+  <DockPanel>
+
+    <!-- Toolbar: refresh, backups folder, all databases, Adminer, root password, new database (main action right) -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,16">
+      <Button Classes="icon small" Command="{Binding LoadCommand}" ToolTip.Tip="{DynamicResource TipRefresh}">
+        <PathIcon Data="{StaticResource IconRefresh}" />
+      </Button>
+      <ProgressBar Grid.Column="1" IsIndeterminate="True" Width="60" MinWidth="0" Margin="10,0" HorizontalAlignment="Left"
+                   IsVisible="{Binding IsLoading}" VerticalAlignment="Center" />
+      <WrapPanel Grid.Column="2" HorizontalAlignment="Right" IsVisible="{Binding IsRunning}">
+        <Button Margin="4" Command="{Binding OpenBackupsCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="{DynamicResource BtnBackupsFolder}" />
+        </Button>
+        <Button Margin="4" Command="{Binding BackupAllCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconSave}" Text="{DynamicResource BtnBackupAll}" />
+        </Button>
+        <Button Margin="4" Command="{Binding CopyPasswordCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconKey}" Text="{DynamicResource BtnCopyPassword}" />
+        </Button>
+        <Button Margin="4" Command="{Binding OpenAdminerCommand}" IsVisible="{Binding HasAdminer}">
+          <ctl:IconLabel Icon="{StaticResource IconOpenInNew}" Text="Adminer" />
+        </Button>
+        <Button Margin="4" Classes="primary" Command="{Binding NewDatabaseCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconPlus}" Text="{DynamicResource BtnCreateDatabase}" />
+        </Button>
+      </WrapPanel>
+    </Grid>
+
+    <Grid>
+      <!-- MariaDB not running -->
+      <Border Classes="card" IsVisible="{Binding !IsRunning}" HorizontalAlignment="Center" VerticalAlignment="Center" MaxWidth="520" Padding="32">
+        <StackPanel Spacing="14">
+          <PathIcon Data="{StaticResource IconDatabase}" Width="40" Height="40" Foreground="{DynamicResource BrushAccent}" HorizontalAlignment="Center" />
+          <TextBlock Classes="h2" Text="{DynamicResource DbNotRunning}" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+          <Button Classes="primary" HorizontalAlignment="Center" Command="{Binding OpenModulesCommand}">
+            <ctl:IconLabel Icon="{StaticResource IconPuzzle}" Text="{DynamicResource NavModules}" />
+          </Button>
+        </StackPanel>
+      </Border>
+
+      <TextBlock IsVisible="{Binding IsEmpty}" Classes="muted" Text="{DynamicResource DbEmpty}" HorizontalAlignment="Center" Margin="0,40,0,0" />
+
+      <ScrollViewer IsVisible="{Binding IsRunning}">
+        <StackPanel Spacing="10">
+          <Grid ColumnDefinitions="260,120,*,Auto" Margin="18,0" IsVisible="{Binding HasItems}">
+            <TextBlock Classes="section column" Text="{DynamicResource ColDatabase}" />
+            <TextBlock Grid.Column="1" Classes="section column" Text="{DynamicResource ColSize}" />
+            <TextBlock Grid.Column="2" Classes="section column" Text="{DynamicResource ColSites}" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding Items}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Classes="card" Padding="18,10" Margin="0,0,0,8">
+                  <Grid ColumnDefinitions="260,120,*,Auto">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <PathIcon Data="{StaticResource IconDatabase}" Width="18" Height="18" Foreground="{DynamicResource BrushAccentHover}" />
+                      <TextBlock Classes="mono" Text="{Binding Name}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Classes="muted" Text="{Binding SizeText}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="2" Classes="muted small" Text="{Binding SitesText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="2">
+                      <Button Classes="icon" Command="{Binding OpenAdminerCommand}" ToolTip.Tip="{DynamicResource TipOpenAdminer}"
+                              IsVisible="{Binding $parent[UserControl].DataContext.HasAdminer}">
+                        <PathIcon Data="{StaticResource IconOpenInNew}" />
+                      </Button>
+                      <Button Classes="icon" Command="{Binding BackupCommand}" ToolTip.Tip="{DynamicResource BtnBackup}">
+                        <PathIcon Data="{StaticResource IconSave}" />
+                      </Button>
+                      <Button Classes="icon" Command="{Binding DeleteCommand}" ToolTip.Tip="{DynamicResource MenuDelete}">
+                        <PathIcon Data="{StaticResource IconDelete}" Foreground="{DynamicResource BrushDanger}" />
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+
+          <!-- Backups: manual and scheduled; restore replaces the database -->
+          <Grid ColumnDefinitions="*,Auto" Margin="0,14,0,0" IsVisible="{Binding HasBackups}">
+            <TextBlock Classes="h2" Text="{DynamicResource HdrBackups}" />
+            <TextBlock Grid.Column="1" Classes="muted small" Text="{Binding NextBackupText}" VerticalAlignment="Center" />
+          </Grid>
+          <Grid ColumnDefinitions="200,260,120,120,Auto" Margin="18,0" IsVisible="{Binding HasBackups}">
+            <TextBlock Classes="section column" Text="{DynamicResource ColDate}" />
+            <TextBlock Grid.Column="1" Classes="section column" Text="{DynamicResource ColDatabase}" />
+            <TextBlock Grid.Column="2" Classes="section column" Text="{DynamicResource ColSize}" />
+            <TextBlock Grid.Column="3" Classes="section column" Text="{DynamicResource ColKind}" />
+          </Grid>
+          <ItemsControl ItemsSource="{Binding Backups}">
+            <ItemsControl.ItemTemplate>
+              <DataTemplate>
+                <Border Classes="card" Padding="18,8" Margin="0,0,0,6">
+                  <Grid ColumnDefinitions="200,260,120,120,*,Auto">
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <PathIcon Data="{StaticResource IconBackup}" Width="16" Height="16" Foreground="{DynamicResource BrushAccentHover}" />
+                      <TextBlock Text="{Binding DateText}" VerticalAlignment="Center" />
+                    </StackPanel>
+                    <TextBlock Grid.Column="1" Classes="mono" Text="{Binding DatabaseText}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" />
+                    <TextBlock Grid.Column="2" Classes="muted" Text="{Binding SizeText}" VerticalAlignment="Center" />
+                    <TextBlock Grid.Column="3" Classes="muted small" Text="{Binding KindText}" VerticalAlignment="Center" />
+                    <StackPanel Grid.Column="5" Orientation="Horizontal" Spacing="2">
+                      <Button Classes="icon" Command="{Binding RestoreCommand}" IsVisible="{Binding CanRestore}" ToolTip.Tip="{DynamicResource BtnRestore}">
+                        <PathIcon Data="{StaticResource IconBackup}" />
+                      </Button>
+                      <Button Classes="icon" Command="{Binding DeleteCommand}" ToolTip.Tip="{DynamicResource MenuDelete}">
+                        <PathIcon Data="{StaticResource IconDelete}" Foreground="{DynamicResource BrushDanger}" />
+                      </Button>
+                    </StackPanel>
+                  </Grid>
+                </Border>
+              </DataTemplate>
+            </ItemsControl.ItemTemplate>
+          </ItemsControl>
+        </StackPanel>
+      </ScrollViewer>
+    </Grid>
+  </DockPanel>
+</UserControl>

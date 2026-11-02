@@ -1,0 +1,48 @@
+<ResourceDictionary xmlns="https://github.com/avaloniaui"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+
+  <!-- WEBit design tokens · palette 464B71 · 118AB2 · 7CD5C7 · F2F2ED (dark) -->
+  <Color x:Key="ColorBgApp">#1B1D2E</Color>
+  <Color x:Key="ColorBgSidebar">#202236</Color>
+  <Color x:Key="ColorSurfaceCard">#2A2D45</Color>
+  <Color x:Key="ColorSurfaceRaised">#353956</Color>
+  <Color x:Key="ColorBorder">#464B71</Color>
+  <Color x:Key="ColorAccent">#118AB2</Color>
+  <Color x:Key="ColorAccentStrong">#0E7596</Color>
+  <Color x:Key="ColorAccentHover">#1A9BC6</Color>
+  <Color x:Key="ColorAccentSoft">#26118AB2</Color>
+  <Color x:Key="ColorSecondary">#7CD5C7</Color>
+  <Color x:Key="ColorSecondarySoft">#267CD5C7</Color>
+  <Color x:Key="ColorTextPrimary">#F2F2ED</Color>
+  <Color x:Key="ColorTextSecondary">#B9BACB</Color>
+  <Color x:Key="ColorTextDisabled">#7D80A0</Color>
+  <Color x:Key="ColorWarning">#F2B84B</Color>
+  <Color x:Key="ColorWarningSoft">#26F2B84B</Color>
+  <Color x:Key="ColorDanger">#E5606B</Color>
+  <Color x:Key="ColorDangerSoft">#26E5606B</Color>
+  <Color x:Key="ColorNeutralSoft">#267D80A0</Color>
+
+  <SolidColorBrush x:Key="BrushBgApp" Color="{StaticResource ColorBgApp}" />
+  <SolidColorBrush x:Key="BrushBgSidebar" Color="{StaticResource ColorBgSidebar}" />
+  <SolidColorBrush x:Key="BrushSurfaceCard" Color="{StaticResource ColorSurfaceCard}" />
+  <SolidColorBrush x:Key="BrushSurfaceRaised" Color="{StaticResource ColorSurfaceRaised}" />
+  <SolidColorBrush x:Key="BrushBorder" Color="{StaticResource ColorBorder}" />
+  <SolidColorBrush x:Key="BrushAccent" Color="{StaticResource ColorAccent}" />
+  <SolidColorBrush x:Key="BrushAccentStrong" Color="{StaticResource ColorAccentStrong}" />
+  <SolidColorBrush x:Key="BrushAccentHover" Color="{StaticResource ColorAccentHover}" />
+  <SolidColorBrush x:Key="BrushAccentSoft" Color="{StaticResource ColorAccentSoft}" />
+  <SolidColorBrush x:Key="BrushMenuHover" Color="#55118AB2" />
+  <SolidColorBrush x:Key="BrushSecondary" Color="{StaticResource ColorSecondary}" />
+  <SolidColorBrush x:Key="BrushSecondarySoft" Color="{StaticResource ColorSecondarySoft}" />
+  <SolidColorBrush x:Key="BrushTextPrimary" Color="{StaticResource ColorTextPrimary}" />
+  <SolidColorBrush x:Key="BrushTextSecondary" Color="{StaticResource ColorTextSecondary}" />
+  <SolidColorBrush x:Key="BrushTextDisabled" Color="{StaticResource ColorTextDisabled}" />
+  <SolidColorBrush x:Key="BrushWarning" Color="{StaticResource ColorWarning}" />
+  <SolidColorBrush x:Key="BrushWarningSoft" Color="{StaticResource ColorWarningSoft}" />
+  <SolidColorBrush x:Key="BrushDanger" Color="{StaticResource ColorDanger}" />
+  <SolidColorBrush x:Key="BrushDangerSoft" Color="{StaticResource ColorDangerSoft}" />
+  <SolidColorBrush x:Key="BrushNeutralSoft" Color="{StaticResource ColorNeutralSoft}" />
+
+  <FontFamily x:Key="MonoFont">Cascadia Mono, Consolas, Courier New</FontFamily>
+
+</ResourceDictionary>

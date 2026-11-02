@@ -1,0 +1,69 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>WEBit.App</RootNamespace>
+    <AssemblyName>WEBit</AssemblyName>
+    <AssemblyTitle>WEBit</AssemblyTitle>
+    <Description>WEBit manager and tray</Description>
+    <ApplicationIcon>Assets\webit.ico</ApplicationIcon>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
+    <AvaloniaUseCompiledBindingsByDefault>false</AvaloniaUseCompiledBindingsByDefault>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" />
+    <PackageReference Include="Avalonia.Desktop" />
+    <PackageReference Include="Avalonia.Themes.Fluent" />
+    <PackageReference Include="Avalonia.Fonts.Inter" />
+    <PackageReference Include="Avalonia.Diagnostics" Condition="'$(Configuration)' == 'Debug'" />
+    <PackageReference Include="CommunityToolkit.Mvvm" />
+    <PackageReference Include="QRCoder" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WEBit.Contracts\WEBit.Contracts.csproj" />
+    <ProjectReference Include="..\WEBit.Platform.Windows\WEBit.Platform.Windows.csproj" />
+    <!-- Build order only: building the app always builds the service as well -->
+    <ProjectReference Include="..\WEBit.Service\WEBit.Service.csproj" ReferenceOutputAssembly="false" Private="false" />
+  </ItemGroup>
+
+  <!-- License files ship next to the app (About page) -->
+  <ItemGroup>
+    <None Include="..\..\licenses\**\*" Link="licenses\%(RecursiveDir)%(Filename)%(Extension)" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+    <None Include="..\..\README.md" Link="README.md" CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
+  </ItemGroup>
+
+  <!--
+    Development: copy the service build next to WEBit.exe, so "Start desktop mode" and
+    "Install as Windows service" find WEBit.Service.exe when starting from Visual Studio.
+    Release folders are produced by build\publish.ps1 (both projects publish into one folder).
+  -->
+  <Target Name="CopyServiceToOutput" AfterTargets="Build" Condition="'$(_IsPublishing)' != 'true'">
+    <MSBuild Projects="..\WEBit.Service\WEBit.Service.csproj" Targets="GetTargetPath" Properties="Configuration=$(Configuration);Platform=$(Platform)">
+      <Output TaskParameter="TargetOutputs" ItemName="_WebitServiceTarget" />
+    </MSBuild>
+    <PropertyGroup>
+      <_WebitServiceDir>@(_WebitServiceTarget->'%(RootDir)%(Directory)')</_WebitServiceDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <!-- Service itself (exe, dll, deps.json, runtimeconfig.json) and the bundled web server (bin\caddy): always -->
+      <_WebitServiceOwn Include="$(_WebitServiceDir)WEBit.Service.*" />
+      <_WebitServiceModules Include="$(_WebitServiceDir)bin\**\*" />
+      <!-- Libraries only the service uses (Microsoft.Extensions.Hosting …): never overwrite the app's own copies -->
+      <_WebitServiceLibs Include="$(_WebitServiceDir)*.dll" Exclude="$(_WebitServiceDir)WEBit.Service.dll" />
+    </ItemGroup>
+    <Copy SourceFiles="@(_WebitServiceOwn)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_WebitServiceModules)"
+          DestinationFiles="@(_WebitServiceModules->'$(OutDir)bin\%(RecursiveDir)%(Filename)%(Extension)')"
+          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="@(_WebitServiceLibs)" DestinationFolder="$(OutDir)" SkipUnchangedFiles="true"
+          Condition="!Exists('$(OutDir)%(_WebitServiceLibs.Filename)%(_WebitServiceLibs.Extension)')" />
+  </Target>
+
+</Project>

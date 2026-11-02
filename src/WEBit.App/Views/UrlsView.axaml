@@ -1,0 +1,124 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.UrlsView">
+  <DockPanel>
+
+    <!-- Toolbar -->
+    <!-- Search shrinks and the check box text wraps on narrow screens; the buttons keep their size -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto,Auto" Margin="0,0,0,14">
+      <TextBox Text="{Binding Search}" Watermark="{DynamicResource WatermarkSearchUrls}" MinWidth="140" MaxWidth="360" HorizontalAlignment="Stretch">
+        <TextBox.InnerLeftContent>
+          <PathIcon Data="{StaticResource IconMagnify}" Width="16" Height="16" Margin="10,0,0,0" Opacity="0.7" />
+        </TextBox.InnerLeftContent>
+      </TextBox>
+      <CheckBox Grid.Column="1" IsChecked="{Binding OnlyPrimary}" VerticalAlignment="Center" Margin="12,0,12,0" MaxWidth="150">
+        <TextBlock Text="{DynamicResource ChkOnlyPrimary}" TextWrapping="Wrap" />
+      </CheckBox>
+      <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+        <Button Command="{Binding CheckAllCommand}" IsEnabled="{Binding !IsBusy}">
+          <ctl:IconLabel Icon="{StaticResource IconCheckCircle}" Text="{DynamicResource BtnCheckAll}" />
+        </Button>
+        <Button>
+          <ctl:IconLabel Icon="{StaticResource IconBookmark}" Text="{DynamicResource BtnExport}" />
+          <Button.Flyout>
+            <MenuFlyout Placement="BottomEdgeAlignedRight">
+              <MenuItem Header="{DynamicResource MenuExportBookmarks}" Command="{Binding ExportBookmarksCommand}">
+                <MenuItem.Icon><PathIcon Data="{StaticResource IconBookmark}" /></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource MenuExportGpo}" Command="{Binding ExportGpoCommand}">
+                <MenuItem.Icon><PathIcon Data="{StaticResource IconShield}" /></MenuItem.Icon>
+              </MenuItem>
+              <MenuItem Header="{DynamicResource MenuExportCsv}" Command="{Binding ExportCsvCommand}">
+                <MenuItem.Icon><PathIcon Data="{StaticResource IconDocument}" /></MenuItem.Icon>
+              </MenuItem>
+            </MenuFlyout>
+          </Button.Flyout>
+        </Button>
+        <Button Command="{Binding CopySelectedCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconCopy}" Text="{DynamicResource BtnCopyUrls}" />
+        </Button>
+        <Button Classes="primary" Command="{Binding CopySelectedMessageCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconMessage}" Text="{DynamicResource BtnCopyMessage}" />
+        </Button>
+      </StackPanel>
+    </Grid>
+
+    <!-- Selection -->
+    <TextBlock DockPanel.Dock="Top" Classes="muted small" Text="{Binding SelectionText}" HorizontalAlignment="Right" Margin="0,0,0,8" />
+
+    <!-- Table header -->
+    <Border DockPanel.Dock="Top" Padding="10,6" Background="{DynamicResource BrushBgSidebar}" CornerRadius="6,6,0,0">
+      <Grid ColumnDefinitions="36,1.6*,120,3.2*,1.3*,1*,176">
+        <Button Classes="icon small" Command="{Binding SelectAllCommand}" ToolTip.Tip="{DynamicResource TipSelectAll}">
+          <PathIcon Data="{StaticResource IconCheck}" />
+        </Button>
+        <TextBlock Grid.Column="1" Classes="section" Text="{DynamicResource ColSite}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="2" Classes="section" Text="{DynamicResource ColKind}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="3" Classes="section" Text="{DynamicResource ColUrl}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="4" Classes="section" Text="{DynamicResource ColDns}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="5" Classes="section" Text="{DynamicResource ColHttp}" VerticalAlignment="Center" />
+        <TextBlock Grid.Column="6" Classes="section" Text="{DynamicResource ColActions}" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <Grid>
+      <TextBlock IsVisible="{Binding !HasRows}" Classes="muted" Text="{DynamicResource NoUrls}" HorizontalAlignment="Center" Margin="0,30,0,0" />
+      <ScrollViewer>
+        <ItemsControl ItemsSource="{Binding Rows}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Border Padding="10,6" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="0,0,0,1" Background="{DynamicResource BrushSurfaceCard}">
+                <Grid ColumnDefinitions="36,1.6*,120,3.2*,1.3*,1*,176">
+                  <CheckBox IsChecked="{Binding IsSelected}" VerticalAlignment="Center" />
+                  <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                    <Ellipse Width="8" Height="8" Fill="{Binding SiteStateBrush}" VerticalAlignment="Center" />
+                    <TextBlock Text="{Binding Title}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding Title}" VerticalAlignment="Center" />
+                  </StackPanel>
+                  <Border Grid.Column="2" Classes="badge" Background="{Binding KindBrush}" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <TextBlock Classes="small" Text="{Binding KindText}" />
+                  </Border>
+                  <Button Grid.Column="3" Classes="link" Command="{Binding OpenCommand}" HorizontalAlignment="Left" VerticalAlignment="Center" ToolTip.Tip="{DynamicResource TipOpenBrowser}">
+                    <TextBlock Text="{Binding Url}" TextTrimming="CharacterEllipsis" />
+                  </Button>
+                  <TextBlock Grid.Column="4" Classes="small" Text="{Binding DnsText}" Foreground="{Binding DnsBrush}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding DnsText}" VerticalAlignment="Center" />
+                  <TextBlock Grid.Column="5" Classes="small" Text="{Binding HttpText}" Foreground="{Binding HttpBrush}" TextTrimming="CharacterEllipsis" ToolTip.Tip="{Binding HttpText}" VerticalAlignment="Center" />
+                  <StackPanel Grid.Column="6" Orientation="Horizontal" Spacing="2">
+                    <Button Classes="icon small" Command="{Binding CopyCommand}" ToolTip.Tip="{DynamicResource TipCopyUrl}">
+                      <PathIcon Data="{StaticResource IconCopy}" />
+                    </Button>
+                    <Button Classes="icon small" Command="{Binding CopyMessageCommand}" ToolTip.Tip="{DynamicResource TipCopyMessage}">
+                      <PathIcon Data="{StaticResource IconMessage}" />
+                    </Button>
+                    <Button Classes="icon small" Command="{Binding OpenCommand}" ToolTip.Tip="{DynamicResource TipOpenBrowser}">
+                      <PathIcon Data="{StaticResource IconOpenInNew}" />
+                    </Button>
+                    <Button Classes="icon small" Command="{Binding CheckCommand}" ToolTip.Tip="{DynamicResource TipCheckUrl}">
+                      <PathIcon Data="{StaticResource IconCheckCircle}" />
+                    </Button>
+                    <Button Classes="icon small" ToolTip.Tip="{DynamicResource TipMore}">
+                      <PathIcon Data="{StaticResource IconDotsVertical}" />
+                      <Button.Flyout>
+                        <MenuFlyout Placement="BottomEdgeAlignedRight">
+                          <MenuItem Header="{DynamicResource MenuCopyHtml}" Command="{Binding CopyHtmlCommand}">
+                            <MenuItem.Icon><PathIcon Data="{StaticResource IconLink}" /></MenuItem.Icon>
+                          </MenuItem>
+                          <MenuItem Header="{DynamicResource MenuCopyMarkdown}" Command="{Binding CopyMarkdownCommand}">
+                            <MenuItem.Icon><PathIcon Data="{StaticResource IconDocument}" /></MenuItem.Icon>
+                          </MenuItem>
+                          <MenuItem Header="{DynamicResource MenuSaveShortcut}" Command="{Binding SaveShortcutCommand}">
+                            <MenuItem.Icon><PathIcon Data="{StaticResource IconDownload}" /></MenuItem.Icon>
+                          </MenuItem>
+                        </MenuFlyout>
+                      </Button.Flyout>
+                    </Button>
+                  </StackPanel>
+                </Grid>
+              </Border>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+      </ScrollViewer>
+    </Grid>
+  </DockPanel>
+</UserControl>

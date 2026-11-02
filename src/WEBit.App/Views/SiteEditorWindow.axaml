@@ -1,0 +1,322 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:WEBit.App.Controls"
+        x:Class="WEBit.App.Views.SiteEditorWindow"
+        Title="{Binding WindowTitle}"
+        Icon="/Assets/webit.ico"
+        Width="920" Height="760"
+        MinWidth="760" MinHeight="600"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <DockPanel>
+
+    <!-- Header -->
+    <Border DockPanel.Dock="Top" Padding="24,18,24,12" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="0,0,0,1">
+      <Grid ColumnDefinitions="Auto,*">
+        <Border Width="6" Height="40" CornerRadius="3" Background="{Binding ColorBrush}" Margin="0,0,14,0" />
+        <TextBlock Grid.Column="1" Classes="h1" Text="{Binding WindowTitle}" VerticalAlignment="Center" />
+      </Grid>
+    </Border>
+
+    <!-- Footer: check left, cancel + save right (main action far right) -->
+    <Border DockPanel.Dock="Bottom" Padding="24,12" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="0,1,0,0">
+      <StackPanel Spacing="10">
+        <Border IsVisible="{Binding HasError}" Background="{DynamicResource BrushDangerSoft}" CornerRadius="6" Padding="12,8">
+          <TextBlock Text="{Binding ErrorText}" Foreground="{DynamicResource BrushDanger}" TextWrapping="Wrap" />
+        </Border>
+        <ScrollViewer IsVisible="{Binding HasIssues}" MaxHeight="120">
+        <ItemsControl ItemsSource="{Binding Issues}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate>
+              <Grid ColumnDefinitions="Auto,*" Margin="0,0,0,4">
+                <PathIcon Data="{Binding Icon}" Foreground="{Binding Brush}" Width="16" Height="16" Margin="0,1,8,0" VerticalAlignment="Top" />
+                <TextBlock Grid.Column="1" Text="{Binding Text}" TextWrapping="Wrap" />
+              </Grid>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+        </ScrollViewer>
+        <Grid ColumnDefinitions="Auto,*,Auto">
+          <Button Command="{Binding CheckCommand}" IsEnabled="{Binding !IsBusy}">
+            <ctl:IconLabel Icon="{StaticResource IconCheckCircle}" Text="{DynamicResource BtnCheckSite}" />
+          </Button>
+          <ProgressBar Grid.Column="1" IsIndeterminate="True" IsVisible="{Binding IsBusy}" Margin="16,0" VerticalAlignment="Center" MinWidth="0" />
+          <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+            <Button Command="{Binding CancelCommand}" IsCancel="True">
+              <ctl:IconLabel Icon="{StaticResource IconClose}" Text="{DynamicResource BtnCancel}" />
+            </Button>
+            <Button Classes="primary" Command="{Binding SaveCommand}" IsEnabled="{Binding !IsBusy}">
+              <ctl:IconLabel Icon="{StaticResource IconSave}" Text="{DynamicResource BtnSaveApply}" />
+            </Button>
+          </StackPanel>
+        </Grid>
+      </StackPanel>
+    </Border>
+
+    <TabControl x:Name="Tabs" Margin="16,8,16,0" SelectionChanged="OnTabChanged">
+
+      <!-- ============================================ General -->
+      <TabItem Header="{DynamicResource TabGeneral}">
+        <ScrollViewer>
+          <StackPanel Spacing="14" Margin="8,12,8,12">
+            <Grid ColumnDefinitions="*,220">
+              <StackPanel Margin="0,0,16,0">
+                <TextBlock Classes="label" Text="{DynamicResource LblName}" />
+                <TextBox Text="{Binding Name}" />
+              </StackPanel>
+              <StackPanel Grid.Column="1">
+                <TextBlock Classes="label" Text="{DynamicResource LblType}" />
+                <ComboBox ItemsSource="{Binding TypeOptions}" SelectedItem="{Binding SelectedType}" HorizontalAlignment="Stretch" />
+              </StackPanel>
+            </Grid>
+
+            <StackPanel>
+              <TextBlock Classes="label" Text="{DynamicResource LblDescription}" />
+              <TextBox Text="{Binding Description}" Watermark="{DynamicResource WatermarkDescription}" />
+            </StackPanel>
+
+            <StackPanel>
+              <TextBlock Classes="label" Text="{DynamicResource LblColor}" />
+              <ItemsControl ItemsSource="{Binding ColorOptions}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="8" />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <!-- Selected color: ring in the accent color; first entry = random (dice) -->
+                    <Button Width="30" Height="30" Padding="0" CornerRadius="15"
+                            Background="{Binding Brush}"
+                            BorderBrush="{DynamicResource BrushBorder}" BorderThickness="2"
+                            Classes.selected="{Binding IsSelected}"
+                            Command="{Binding $parent[Window].DataContext.PickColorCommand}"
+                            CommandParameter="{Binding Hex}"
+                            ToolTip.Tip="{Binding Tip}">
+                      <PathIcon Data="{StaticResource IconDice}" Width="16" Height="16" IsVisible="{Binding IsRandom}"
+                                Foreground="{DynamicResource BrushTextPrimary}" />
+                    </Button>
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </StackPanel>
+
+            <!-- Static, PHP, Node.js, Python: folder -->
+            <StackPanel IsVisible="{Binding HasRoot}" Spacing="8">
+              <TextBlock Classes="label" Text="{DynamicResource LblRoot}" />
+              <Grid ColumnDefinitions="*,Auto,Auto">
+                <TextBox Text="{Binding Root}" Watermark="D:\WEBit\www\docs" />
+                <Button Grid.Column="1" Margin="8,0,0,0" Command="{Binding BrowseRootCommand}">
+                  <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="{DynamicResource BtnBrowse}" />
+                </Button>
+                <Button Grid.Column="2" Margin="8,0,0,0" Command="{Binding AnalyzeCommand}">
+                  <ctl:IconLabel Icon="{StaticResource IconMagnify}" Text="{DynamicResource BtnAnalyze}" />
+                </Button>
+              </Grid>
+              <Border IsVisible="{Binding HasAnalysis}" Classes="card" Padding="12,10" Background="{DynamicResource BrushSurfaceRaised}">
+                <Grid ColumnDefinitions="Auto,*">
+                  <PathIcon Data="{StaticResource IconInfo}" Width="18" Height="18" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,10,0" VerticalAlignment="Top" />
+                  <TextBlock Grid.Column="1" Text="{Binding AnalysisText}" TextWrapping="Wrap" />
+                </Grid>
+              </Border>
+            </StackPanel>
+
+            <!-- PHP: version and Xdebug -->
+            <Grid ColumnDefinitions="220,*" IsVisible="{Binding IsPhp}">
+              <StackPanel Margin="0,0,16,0">
+                <TextBlock Classes="label" Text="{DynamicResource LblPhpVersion}" />
+                <ComboBox ItemsSource="{Binding PhpVersionOptions}" SelectedItem="{Binding SelectedPhpVersion}" HorizontalAlignment="Stretch" />
+              </StackPanel>
+              <CheckBox Grid.Column="1" IsChecked="{Binding Xdebug}" IsEnabled="{Binding XdebugInstalled}" Content="{DynamicResource ChkXdebug}"
+                        VerticalAlignment="Bottom" Margin="0,0,0,4" />
+            </Grid>
+
+            <!-- Database of the site (exported and imported with it) -->
+            <StackPanel IsVisible="{Binding HasRoot}">
+              <TextBlock Classes="label" Text="{DynamicResource LblSiteDatabase}" />
+              <TextBox Text="{Binding Database}" Watermark="{DynamicResource WatermarkSiteDatabase}" Width="320" HorizontalAlignment="Left" />
+            </StackPanel>
+
+            <!-- Node.js / Python: how the app is started -->
+            <StackPanel IsVisible="{Binding IsApp}" Spacing="10">
+              <Grid ColumnDefinitions="*,220">
+                <StackPanel Margin="0,0,16,0">
+                  <TextBlock Classes="label" Text="{DynamicResource LblAppCommand}" />
+                  <TextBox Text="{Binding AppCommand}" Watermark="{Binding CommandWatermark}" />
+                </StackPanel>
+                <StackPanel Grid.Column="1">
+                  <TextBlock Classes="label" Text="{DynamicResource LblAppPort}" />
+                  <TextBox Text="{Binding AppPortText, Mode=OneWay}" IsReadOnly="True" />
+                </StackPanel>
+              </Grid>
+              <StackPanel IsVisible="{Binding IsPython}">
+                <TextBlock Classes="label" Text="{DynamicResource LblPythonVersion}" />
+                <TextBox Text="{Binding PythonVersion}" Watermark="3.13" Width="220" HorizontalAlignment="Left" />
+              </StackPanel>
+              <CheckBox IsChecked="{Binding KeepAlive}" Content="{DynamicResource ChkKeepAlive}" />
+              <CheckBox IsChecked="{Binding RestartOnChange}" Content="{DynamicResource ChkRestartOnChange}" />
+              <StackPanel>
+                <TextBlock Classes="label" Text="{DynamicResource LblAppEnvironment}" />
+                <TextBox Text="{Binding AppEnvironment}" AcceptsReturn="True" Height="90" Watermark="DATABASE_URL=mysql://user:pass@127.0.0.1:47204/app" />
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Live view: reload on file changes and/or every N seconds -->
+            <StackPanel IsVisible="{Binding !IsRedirect}" Spacing="8">
+              <TextBlock Classes="label" Text="{DynamicResource LblLiveView}" />
+              <CheckBox IsChecked="{Binding LiveReload}" Content="{DynamicResource ChkLiveReload}" />
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <CheckBox IsChecked="{Binding AutoReload}" Content="{DynamicResource ChkAutoReload}" VerticalAlignment="Center" />
+                <NumericUpDown Value="{Binding ReloadInterval}" Minimum="2" Maximum="3600" Increment="1" FormatString="0" Width="130"
+                               IsEnabled="{Binding AutoReload}" />
+                <TextBlock Classes="muted" Text="{DynamicResource UnitSeconds}" VerticalAlignment="Center" />
+              </StackPanel>
+              <StackPanel Orientation="Horizontal" Spacing="10">
+                <TextBlock Classes="muted" Text="{DynamicResource LblReloadDelay}" VerticalAlignment="Center" />
+                <NumericUpDown Value="{Binding ReloadDelayMs}" Minimum="0" Maximum="10000" Increment="100" FormatString="0" Width="130"
+                               IsEnabled="{Binding LiveReload}" />
+                <TextBlock Classes="muted" Text="ms" VerticalAlignment="Center" />
+              </StackPanel>
+            </StackPanel>
+
+            <!-- Proxy -->
+            <StackPanel IsVisible="{Binding IsProxy}" Spacing="8">
+              <TextBlock Classes="label" Text="{DynamicResource LblProxyTarget}" />
+              <TextBox Text="{Binding ProxyTarget}" Watermark="http://127.0.0.1:3000/" />
+            </StackPanel>
+
+            <!-- Redirect -->
+            <StackPanel IsVisible="{Binding IsRedirect}" Spacing="8">
+              <TextBlock Classes="label" Text="{DynamicResource LblRedirectTarget}" />
+              <TextBox Text="{Binding RedirectTarget}" Watermark="https://portal.company.local/" />
+              <CheckBox IsChecked="{Binding RedirectPermanent}" Content="{DynamicResource ChkRedirectPermanent}" />
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- ============================================ Address -->
+      <TabItem Header="{DynamicResource TabAddress}">
+        <ScrollViewer>
+          <StackPanel Spacing="12" Margin="8,12,8,12">
+            <ItemsControl ItemsSource="{Binding Bindings}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Classes="card" Padding="14" Margin="0,0,0,10">
+                    <StackPanel Spacing="8">
+                      <Grid ColumnDefinitions="200,130,*,Auto">
+                        <StackPanel Margin="0,0,10,0">
+                          <TextBlock Classes="label" Text="{DynamicResource LblAddress}" />
+                          <ComboBox ItemsSource="{Binding AddressOptions}" SelectedItem="{Binding Address}" HorizontalAlignment="Stretch" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="1" Margin="0,0,10,0">
+                          <TextBlock Classes="label" Text="{DynamicResource LblPort}" />
+                          <NumericUpDown Value="{Binding Port}" Minimum="1" Maximum="65535" Increment="1" FormatString="0" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="2" Margin="0,0,10,0">
+                          <TextBlock Classes="label" Text="{DynamicResource LblHostname}" />
+                          <TextBox Text="{Binding Host}" Watermark="docs.company.local" />
+                        </StackPanel>
+                        <StackPanel Grid.Column="3" Orientation="Horizontal" Spacing="2" VerticalAlignment="Bottom">
+                          <Button Classes="icon" Command="{Binding SuggestCommand}" ToolTip.Tip="{DynamicResource TipSuggestPort}">
+                            <PathIcon Data="{StaticResource IconMagnify}" />
+                          </Button>
+                          <Button Classes="icon" Command="{Binding CheckCommand}" ToolTip.Tip="{DynamicResource TipCheckBinding}">
+                            <PathIcon Data="{StaticResource IconCheckCircle}" />
+                          </Button>
+                          <Button Classes="icon" Command="{Binding RemoveCommand}" ToolTip.Tip="{DynamicResource TipRemove}">
+                            <PathIcon Data="{StaticResource IconDelete}" />
+                          </Button>
+                        </StackPanel>
+                      </Grid>
+                      <Grid ColumnDefinitions="Auto,*,Auto">
+                        <PathIcon Data="{StaticResource IconLink}" Width="14" Height="14" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,8,0" />
+                        <TextBlock Grid.Column="1" Classes="small accent" Text="{Binding PreviewUrl}" VerticalAlignment="Center" />
+                        <CheckBox Grid.Column="2" IsChecked="{Binding Tls}" Content="{DynamicResource ChkHttps}" />
+                      </Grid>
+                      <Grid ColumnDefinitions="Auto,*" IsVisible="{Binding HasCheck}">
+                        <PathIcon Data="{Binding CheckIcon}" Foreground="{Binding CheckBrush}" Width="15" Height="15" Margin="0,1,8,0" VerticalAlignment="Top" />
+                        <TextBlock Grid.Column="1" Classes="small" Text="{Binding CheckText}" Foreground="{Binding CheckBrush}" TextWrapping="Wrap" />
+                      </Grid>
+                    </StackPanel>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button HorizontalAlignment="Left" Command="{Binding AddBindingCommand}">
+              <ctl:IconLabel Icon="{StaticResource IconPlus}" Text="{DynamicResource BtnAddBinding}" />
+            </Button>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- ============================================ Content -->
+      <TabItem Header="{DynamicResource TabContent}" IsEnabled="{Binding IsStatic}">
+        <ScrollViewer>
+          <StackPanel Spacing="14" Margin="8,12,8,12">
+            <Grid ColumnDefinitions="*,*">
+              <StackPanel Margin="0,0,16,0" Spacing="10">
+                <StackPanel>
+                  <TextBlock Classes="label" Text="{DynamicResource LblCharset}" />
+                  <ComboBox ItemsSource="{Binding CharsetOptions}" SelectedItem="{Binding SelectedCharset}" HorizontalAlignment="Stretch" />
+                </StackPanel>
+                <CheckBox IsChecked="{Binding Compression}" Content="{DynamicResource ChkCompression}" />
+                <CheckBox IsChecked="{Binding DirectoryBrowsing}" Content="{DynamicResource ChkDirectoryBrowsing}" />
+              </StackPanel>
+              <StackPanel Grid.Column="1" Spacing="10">
+                <StackPanel>
+                  <TextBlock Classes="label" Text="{DynamicResource LblDefaultDocs}" />
+                  <TextBox Text="{Binding DefaultDocuments}" AcceptsReturn="True" Height="120" />
+                </StackPanel>
+              </StackPanel>
+            </Grid>
+            <StackPanel>
+              <TextBlock Classes="label" Text="{DynamicResource LblHiddenPaths}" />
+              <TextBox Text="{Binding HiddenPaths}" AcceptsReturn="True" Height="130" />
+            </StackPanel>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- ============================================ Access -->
+      <TabItem Header="{DynamicResource TabAccess}">
+        <ScrollViewer>
+          <StackPanel Spacing="10" Margin="8,12,8,12">
+            <TextBlock Classes="label" Text="{DynamicResource LblAllowNetworks}" />
+            <TextBox Text="{Binding AllowNetworks}" AcceptsReturn="True" Height="140" Watermark="10.0.0.0/8&#x0a;192.168.10.0/24" />
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+
+      <!-- ============================================ URLs -->
+      <TabItem Header="{DynamicResource TabUrls}">
+        <ScrollViewer>
+          <StackPanel Spacing="14" Margin="8,12,8,12">
+            <StackPanel>
+              <TextBlock Classes="label" Text="{DynamicResource LblPublicUrl}" />
+              <TextBox Text="{Binding PublicUrl}" Watermark="https://docs.company.com/" />
+            </StackPanel>
+            <Border Classes="divider" />
+            <TextBlock Classes="h3" Text="{DynamicResource HdrDeepLinks}" />
+            <ItemsControl ItemsSource="{Binding Links}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Grid ColumnDefinitions="*,*,Auto" Margin="0,0,0,8">
+                    <TextBox Text="{Binding Label}" Watermark="{DynamicResource WatermarkLinkLabel}" Margin="0,0,8,0" />
+                    <TextBox Grid.Column="1" Text="{Binding Path}" Watermark="/manual/chapter3.htm" Margin="0,0,8,0" />
+                    <Button Grid.Column="2" Classes="icon" Command="{Binding RemoveCommand}" ToolTip.Tip="{DynamicResource TipRemove}">
+                      <PathIcon Data="{StaticResource IconDelete}" />
+                    </Button>
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Button HorizontalAlignment="Left" Command="{Binding AddLinkCommand}">
+              <ctl:IconLabel Icon="{StaticResource IconPlus}" Text="{DynamicResource BtnAddLink}" />
+            </Button>
+          </StackPanel>
+        </ScrollViewer>
+      </TabItem>
+    </TabControl>
+  </DockPanel>
+</Window>

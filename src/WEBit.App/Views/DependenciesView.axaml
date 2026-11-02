@@ -1,0 +1,102 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.DependenciesView">
+  <DockPanel>
+
+    <!-- Toolbar: check, install missing, update all -->
+    <Grid DockPanel.Dock="Top" ColumnDefinitions="*,Auto" Margin="0,0,0,16">
+      <StackPanel Orientation="Horizontal" Spacing="10" VerticalAlignment="Center">
+        <ProgressBar IsIndeterminate="True" Width="60" MinWidth="0" IsVisible="{Binding IsChecking}" VerticalAlignment="Center" />
+        <TextBlock Classes="muted small" Text="{Binding LastCheckText}" IsVisible="{Binding HasLastCheck}" VerticalAlignment="Center" TextWrapping="Wrap" />
+      </StackPanel>
+      <WrapPanel Grid.Column="1" HorizontalAlignment="Right">
+        <Button Margin="4" Command="{Binding OpenModulesFolderCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="{DynamicResource BtnOpenFolder}" />
+        </Button>
+        <Button Margin="4" Command="{Binding CheckUpdatesCommand}" IsEnabled="{Binding !IsChecking}">
+          <ctl:IconLabel Icon="{StaticResource IconRefresh}" Text="{DynamicResource BtnCheckUpdates}" />
+        </Button>
+        <Button Margin="4" Command="{Binding UpdateAllCommand}" IsVisible="{Binding HasUpdates}">
+          <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnUpdateAll}" />
+        </Button>
+        <Button Margin="4" Classes="primary" Command="{Binding InstallMissingCommand}" IsVisible="{Binding HasMissing}">
+          <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnDownloadMissing}" />
+        </Button>
+      </WrapPanel>
+    </Grid>
+
+    <ScrollViewer>
+      <ItemsControl ItemsSource="{Binding Cards}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate>
+            <Border Classes="card" Margin="0,0,0,12">
+              <Grid ColumnDefinitions="Auto,*" RowDefinitions="Auto,Auto,Auto">
+
+                <!-- Icon, name, kind, state -->
+                <PathIcon Data="{Binding Icon}" Width="28" Height="28" Foreground="{DynamicResource BrushAccentHover}" Margin="0,2,16,0" VerticalAlignment="Top" />
+                <StackPanel Grid.Column="1" Spacing="6">
+                  <!-- Name left; kind and state as equal pills, right-aligned with fixed width -->
+                  <Grid ColumnDefinitions="*,Auto">
+                    <TextBlock Classes="h3" Text="{Binding Name}" TextTrimming="CharacterEllipsis" Margin="0,0,10,0" />
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                      <Border Classes="statepill" Background="{DynamicResource BrushSurfaceRaised}">
+                        <TextBlock Text="{Binding KindText}" Foreground="{DynamicResource BrushTextSecondary}" />
+                      </Border>
+                      <Border Classes="statepill" Background="{Binding StateSoftBrush}">
+                        <TextBlock Text="{Binding StateText}" Foreground="{Binding StateBrush}" />
+                      </Border>
+                    </StackPanel>
+                  </Grid>
+                  <Grid ColumnDefinitions="110,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,4,0,0">
+                    <TextBlock Classes="muted small" Text="{DynamicResource LblVersion}" />
+                    <TextBlock Grid.Column="1" Classes="small" Text="{Binding Version}" />
+                    <TextBlock Grid.Row="1" Classes="muted small" Text="{DynamicResource LblLatestVersion}" IsVisible="{Binding IsModule}" />
+                    <TextBlock Grid.Row="1" Grid.Column="1" Classes="small" Text="{Binding Latest}" IsVisible="{Binding IsModule}" />
+                    <TextBlock Grid.Row="2" Classes="muted small" Text="{DynamicResource LblPath}" />
+                    <TextBlock Grid.Row="2" Grid.Column="1" Classes="small" Text="{Binding PathText}" TextWrapping="Wrap" />
+                    <TextBlock Grid.Row="3" Classes="muted small" Text="{DynamicResource LblLicense}" />
+                    <TextBlock Grid.Row="3" Grid.Column="1" Classes="small" Text="{Binding Status.License}" />
+                  </Grid>
+                </StackPanel>
+
+                <!-- Actions, right-aligned: install/update/uninstall above source/folder (same position on every card) -->
+                <StackPanel Grid.Row="1" Grid.ColumnSpan="2" HorizontalAlignment="Right" Margin="0,8,0,0" Spacing="4">
+                  <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <Button Classes="danger fixed" Command="{Binding RemoveCommand}" IsVisible="{Binding ShowRemove}">
+                      <ctl:IconLabel Icon="{StaticResource IconDelete}" Text="{DynamicResource BtnUninstall}" />
+                    </Button>
+                    <Button Classes="fixed" Classes.primary="{Binding UpdateIsPrimary}" Command="{Binding UpdateCommand}" IsVisible="{Binding ShowUpdate}">
+                      <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnUpdateModule}" />
+                    </Button>
+                    <Button Classes="primary fixed" Command="{Binding InstallCommand}" IsVisible="{Binding ShowInstall}">
+                      <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnInstall}" />
+                    </Button>
+                  </StackPanel>
+                  <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8">
+                    <Button Classes="fixed" Command="{Binding OpenSourceCommand}" ToolTip.Tip="{Binding Status.Source}">
+                      <ctl:IconLabel Icon="{StaticResource IconOpenInNew}" Text="{DynamicResource BtnSource}" />
+                    </Button>
+                    <Button Classes="fixed" Command="{Binding OpenFolderCommand}" IsEnabled="{Binding HasPath}">
+                      <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="{DynamicResource BtnOpenFolder}" />
+                    </Button>
+                  </StackPanel>
+                </StackPanel>
+
+                <!-- Download progress / error over the whole width -->
+                <StackPanel Grid.Row="2" Grid.ColumnSpan="2" Spacing="6" Margin="0,12,0,0" IsVisible="{Binding IsDownloading}">
+                  <ProgressBar Minimum="0" Maximum="100" Value="{Binding DownloadPercent}" IsIndeterminate="{Binding DownloadIndeterminate}" Height="6" />
+                  <TextBlock Classes="muted small" Text="{Binding DownloadText}" />
+                </StackPanel>
+                <Border Grid.Row="2" Grid.ColumnSpan="2" Margin="0,12,0,0" IsVisible="{Binding DownloadFailed}"
+                        Background="{DynamicResource BrushDangerSoft}" CornerRadius="6" Padding="10,6">
+                  <TextBlock Classes="small" Text="{Binding DownloadText}" TextWrapping="Wrap" Foreground="{DynamicResource BrushDanger}" />
+                </Border>
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>

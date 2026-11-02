@@ -1,0 +1,33 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:ctl="using:WEBit.App.Controls"
+        x:Class="WEBit.App.Views.QrWindow"
+        Icon="/Assets/webit.ico"
+        Width="420"
+        SizeToContent="Height"
+        CanResize="False"
+        ShowInTaskbar="False"
+        WindowStartupLocation="CenterOwner">
+  <Border Padding="24">
+    <StackPanel Spacing="14">
+      <StackPanel Orientation="Horizontal" Spacing="12">
+        <PathIcon Data="{StaticResource IconQrcode}" Width="26" Height="26" Foreground="{DynamicResource BrushAccentHover}" />
+        <TextBlock x:Name="HeaderText" Classes="h2" />
+      </StackPanel>
+      <ComboBox x:Name="UrlBox" HorizontalAlignment="Stretch" SelectionChanged="OnUrlChanged" />
+      <!-- White quiet zone around the code: readable by every camera -->
+      <Border Background="White" CornerRadius="8" Padding="12" Width="300" Height="300" HorizontalAlignment="Center">
+        <Path x:Name="Code" Fill="Black" Stretch="Uniform" />
+      </Border>
+      <TextBlock x:Name="HintText" Classes="muted small" TextWrapping="Wrap" TextAlignment="Center" />
+      <StackPanel Orientation="Horizontal" Spacing="10" HorizontalAlignment="Right">
+        <Button Click="OnCopy" Classes="fixed">
+          <ctl:IconLabel Icon="{StaticResource IconCopy}" Text="{DynamicResource TipCopyUrl}" />
+        </Button>
+        <Button Click="OnClose" Classes="primary fixed" IsDefault="True" IsCancel="True">
+          <ctl:IconLabel Icon="{StaticResource IconCheck}" Text="OK" />
+        </Button>
+      </StackPanel>
+    </StackPanel>
+  </Border>
+</Window>

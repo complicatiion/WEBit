@@ -1,0 +1,37 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="WEBit.App.App"
+             Name="WEBit"
+             RequestedThemeVariant="Dark">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <ResourceDictionary.MergedDictionaries>
+        <ResourceInclude Source="avares://WEBit/Theme/Colors.axaml" />
+        <ResourceInclude Source="avares://WEBit/Theme/Icons.axaml" />
+      </ResourceDictionary.MergedDictionaries>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme>
+      <FluentTheme.Palettes>
+        <!-- Accent instead of system blue: check marks, selection, switches, focus -->
+        <ColorPaletteResources x:Key="Dark"
+                               Accent="#FF118AB2"
+                               RegionColor="#FF1B1D2E"
+                               AltHigh="#FF1B1D2E"
+                               ListLow="#FF3A3F63"
+                               ListMedium="#FF464B71"
+                               ChromeMediumLow="#FF2A2D45"
+                               ChromeMedium="#FF353956"
+                               ChromeLow="#FF202236"
+                               ChromeAltLow="#FFF2F2ED"
+                               BaseHigh="#FFF2F2ED" />
+        <ColorPaletteResources x:Key="Light" Accent="#FF118AB2" />
+      </FluentTheme.Palettes>
+    </FluentTheme>
+    <StyleInclude Source="avares://WEBit/Theme/Styles.axaml" />
+  </Application.Styles>
+
+</Application>

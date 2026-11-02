@@ -1,0 +1,160 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.DashboardView">
+  <ScrollViewer>
+    <StackPanel Spacing="20">
+
+      <!-- Action bar -->
+      <Border Classes="card" Padding="14">
+        <WrapPanel>
+          <Button Classes="success" Margin="0,0,8,0" Command="{Binding StartAllCommand}">
+            <ctl:IconLabel Icon="{StaticResource IconPlayCircle}" Text="{DynamicResource BtnStartAll}" />
+          </Button>
+          <Button Classes="danger" Margin="0,0,8,0" Command="{Binding StopAllCommand}">
+            <ctl:IconLabel Icon="{StaticResource IconStopCircle}" Text="{DynamicResource BtnStopAll}" />
+          </Button>
+          <Button Margin="0,0,8,0" Command="{Binding Main.OpenWwwCommand}">
+            <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="www" />
+          </Button>
+          <Button Margin="0,0,8,0" Command="{Binding OpenUrlsCommand}">
+            <ctl:IconLabel Icon="{StaticResource IconLink}" Text="{DynamicResource NavUrls}" />
+          </Button>
+          <Button Margin="0,0,8,0" Command="{Binding OpenLogsCommand}">
+            <ctl:IconLabel Icon="{StaticResource IconLog}" Text="{DynamicResource NavLogs}" />
+          </Button>
+          <Button Classes="primary" Command="{Binding NewSiteCommand}">
+            <ctl:IconLabel Icon="{StaticResource IconPlus}" Text="{DynamicResource BtnNewSite}" />
+          </Button>
+        </WrapPanel>
+      </Border>
+
+      <!-- Key figures -->
+      <UniformGrid Columns="4" Margin="-8,0,-8,0">
+        <Border Classes="card" Margin="8,0">
+          <StackPanel Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <PathIcon Data="{StaticResource IconWeb}" Width="18" Height="18" Foreground="{DynamicResource BrushAccentHover}" />
+              <TextBlock Classes="section" Text="{DynamicResource KpiSites}" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Classes="kpi" Text="{Binding SitesTotal}" Foreground="{DynamicResource BrushAccentHover}" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Margin="8,0">
+          <StackPanel Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <PathIcon Data="{StaticResource IconCheckCircle}" Width="18" Height="18" Foreground="{DynamicResource BrushSecondary}" />
+              <TextBlock Classes="section" Text="{DynamicResource KpiRunning}" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Classes="kpi" Text="{Binding SitesRunning}" Foreground="{DynamicResource BrushSecondary}" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Margin="8,0">
+          <StackPanel Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <PathIcon Data="{StaticResource IconStopCircle}" Width="18" Height="18" Foreground="{DynamicResource BrushDanger}" />
+              <TextBlock Classes="section" Text="{DynamicResource KpiStopped}" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Classes="kpi" Text="{Binding SitesStopped}" Foreground="{DynamicResource BrushDanger}" />
+          </StackPanel>
+        </Border>
+        <Border Classes="card" Margin="8,0">
+          <StackPanel Spacing="6">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+              <PathIcon Data="{StaticResource IconAlertCircle}" Width="18" Height="18" Foreground="{DynamicResource BrushWarning}" />
+              <TextBlock Classes="section" Text="{DynamicResource KpiErrors}" VerticalAlignment="Center" />
+            </StackPanel>
+            <TextBlock Classes="kpi" Text="{Binding SitesError}" Foreground="{DynamicResource BrushWarning}" />
+          </StackPanel>
+        </Border>
+      </UniformGrid>
+
+      <Grid ColumnDefinitions="3*,2*" Margin="-8,0">
+        <!-- Services with switches -->
+        <Border Classes="card" Margin="8,0">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <PathIcon Data="{StaticResource IconPuzzle}" Width="20" Height="20" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Classes="h2" Text="{DynamicResource HdrServices}" VerticalAlignment="Center" />
+              <Button Grid.Column="2" Classes="icon" Command="{Binding OpenModulesCommand}" ToolTip.Tip="{DynamicResource NavModules}">
+                <PathIcon Data="{StaticResource IconChevronRight}" />
+              </Button>
+            </Grid>
+            <ItemsControl ItemsSource="{Binding Services}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Border Padding="0,8" BorderBrush="{DynamicResource BrushBorder}" BorderThickness="0,0,0,1">
+                    <Grid ColumnDefinitions="Auto,*,Auto,Auto,Auto">
+                      <Ellipse Width="10" Height="10" Fill="{Binding StateBrush}" VerticalAlignment="Center" Margin="2,0,12,0" />
+                      <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                        <TextBlock Classes="muted small" Text="{Binding Endpoint}" />
+                      </StackPanel>
+                      <TextBlock Grid.Column="2" Classes="muted small" Text="{Binding Version}" VerticalAlignment="Center" Margin="0,0,16,0" />
+                      <StackPanel Grid.Column="3" Orientation="Horizontal" Margin="0,0,8,0" VerticalAlignment="Center">
+                        <Button Classes="icon small" Command="{Binding OpenCommand}" IsVisible="{Binding HasUrl}" ToolTip.Tip="{DynamicResource BtnOpen}">
+                          <PathIcon Data="{StaticResource IconOpenInNew}" />
+                        </Button>
+                        <Button Classes="small" Command="{Binding DownloadCommand}" IsVisible="{Binding ShowDownload}">
+                          <ctl:IconLabel Icon="{StaticResource IconDownload}" Text="{DynamicResource BtnDownload}" />
+                        </Button>
+                        <ProgressBar Width="90" MinWidth="0" Minimum="0" Maximum="100" Value="{Binding DownloadPercent}" IsIndeterminate="{Binding DownloadIndeterminate}"
+                                     IsVisible="{Binding IsDownloading}" VerticalAlignment="Center" />
+                      </StackPanel>
+                      <ToggleSwitch Grid.Column="4" IsChecked="{Binding IsOn}" IsEnabled="{Binding CanToggle}" OnContent="" OffContent="" VerticalAlignment="Center" />
+                    </Grid>
+                  </Border>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <Grid ColumnDefinitions="140,*" RowDefinitions="Auto,Auto,Auto,Auto" Classes="form" Margin="0,6,0,0">
+              <TextBlock Classes="muted" Text="{DynamicResource LblMode}" />
+              <Border Grid.Column="1" Classes="info"><TextBlock Classes="small" Text="{Binding ModeText}" /></Border>
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblUptime}" />
+              <Border Grid.Row="1" Grid.Column="1" Classes="info"><TextBlock Classes="small" Text="{Binding UptimeText}" /></Border>
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblHost}" />
+              <Border Grid.Row="2" Grid.Column="1" Classes="info"><SelectableTextBlock Classes="small" Text="{Binding MachineText}" /></Border>
+              <TextBlock Grid.Row="3" Classes="muted" Text="{DynamicResource LblWwwRoot}" />
+              <Border Grid.Row="3" Grid.Column="1" Classes="info"><SelectableTextBlock Classes="small" Text="{Binding WwwRoot}" TextWrapping="Wrap" /></Border>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Notices -->
+        <Border Grid.Column="1" Classes="card" Margin="8,0">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <PathIcon Data="{StaticResource IconAlert}" Width="20" Height="20" Foreground="{DynamicResource BrushWarning}" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Classes="h2" Text="{DynamicResource HdrProblems}" VerticalAlignment="Center" />
+              <!-- Dismiss all current notices (they return when something changes) -->
+              <Button Grid.Column="2" Classes="icon" Command="{Binding DismissAllCommand}" IsVisible="{Binding !HasNoProblems}" ToolTip.Tip="{DynamicResource TipDismissNotices}">
+                <PathIcon Data="{StaticResource IconCheck}" />
+              </Button>
+            </Grid>
+            <StackPanel Orientation="Horizontal" Spacing="8" IsVisible="{Binding HasNoProblems}">
+              <PathIcon Data="{StaticResource IconCheckCircle}" Width="18" Height="18" Foreground="{DynamicResource BrushSecondary}" />
+              <TextBlock Text="{DynamicResource NoProblems}" Classes="muted" />
+            </StackPanel>
+            <ItemsControl ItemsSource="{Binding Problems}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <Grid ColumnDefinitions="Auto,*,Auto" Margin="0,0,0,10">
+                    <PathIcon Data="{Binding Icon}" Foreground="{Binding Brush}" Width="18" Height="18" VerticalAlignment="Top" Margin="0,1,10,0" />
+                    <StackPanel Grid.Column="1" Spacing="2">
+                      <TextBlock Text="{Binding Title}" FontWeight="SemiBold" />
+                      <TextBlock Text="{Binding Text}" Classes="muted small" TextWrapping="Wrap" />
+                    </StackPanel>
+                    <Button Grid.Column="2" Classes="icon small" VerticalAlignment="Top" ToolTip.Tip="{DynamicResource TipDismissNotice}"
+                            Command="{Binding $parent[UserControl].DataContext.DismissCommand}" CommandParameter="{Binding}">
+                      <PathIcon Data="{StaticResource IconClose}" />
+                    </Button>
+                  </Grid>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+      </Grid>
+    </StackPanel>
+  </ScrollViewer>
+</UserControl>

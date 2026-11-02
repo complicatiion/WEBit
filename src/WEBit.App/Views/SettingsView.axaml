@@ -1,0 +1,415 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ctl="using:WEBit.App.Controls"
+             x:Class="WEBit.App.Views.SettingsView">
+  <!--
+    Layout rule of this page: label left, control right (fixed 320 px column), right edges of all
+    controls and buttons line up across every card.
+  -->
+  <DockPanel>
+
+    <!-- Footer: main action right -->
+    <Border DockPanel.Dock="Bottom" Padding="0,14,0,0">
+      <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+        <Button Classes="fixed" Command="{Binding LoadCommand}">
+          <ctl:IconLabel Icon="{StaticResource IconUndo}" Text="{DynamicResource BtnDiscard}" />
+        </Button>
+        <Button Classes="primary fixed" Command="{Binding SaveCommand}" IsEnabled="{Binding !IsBusy}">
+          <ctl:IconLabel Icon="{StaticResource IconSave}" Text="{DynamicResource BtnSave}" />
+        </Button>
+      </StackPanel>
+    </Border>
+
+    <ScrollViewer>
+      <StackPanel Spacing="20" MaxWidth="1040" HorizontalAlignment="Left">
+
+        <!-- General -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Classes="h2" Text="{DynamicResource HdrGeneral}" />
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto,Auto" Classes="settings">
+              <TextBlock Classes="muted" Text="{DynamicResource LblLanguage}" />
+              <ComboBox Grid.Column="1" ItemsSource="{Binding Languages}" SelectedItem="{Binding SelectedLanguage}" HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <StackPanel Orientation="Horizontal" Spacing="10">
+                      <Image Classes="flag" Source="{Binding Flag}" />
+                      <TextBlock Text="{Binding Name}" VerticalAlignment="Center" />
+                    </StackPanel>
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblTrayAutostart}" />
+              <ToggleSwitch Grid.Row="1" Grid.Column="1" IsChecked="{Binding TrayAutostart}" IsEnabled="{Binding IsWindows}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblAutoDesktopMode}" />
+              <ToggleSwitch Grid.Row="2" Grid.Column="1" IsChecked="{Binding AutoDesktopMode}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Network & ports -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Classes="h2" Text="{DynamicResource HdrNetworkPorts}" />
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto,Auto" Classes="settings" IsEnabled="{Binding ServiceSettingsAvailable}">
+              <TextBlock Classes="muted" Text="{DynamicResource LblSiteRange}" />
+              <Grid Grid.Column="1" ColumnDefinitions="*,24,*">
+                <NumericUpDown Value="{Binding SitePortStart}" Minimum="1" Maximum="65535" FormatString="0" />
+                <TextBlock Grid.Column="1" Text="–" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <NumericUpDown Grid.Column="2" Value="{Binding SitePortEnd}" Minimum="1" Maximum="65535" FormatString="0" />
+              </Grid>
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblInternalRange}" />
+              <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,24,*">
+                <NumericUpDown Value="{Binding InternalPortStart}" Minimum="1" Maximum="65535" FormatString="0" />
+                <TextBlock Grid.Column="1" Text="–" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                <NumericUpDown Grid.Column="2" Value="{Binding InternalPortEnd}" Minimum="1" Maximum="65535" FormatString="0" />
+              </Grid>
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblAdminApi}" />
+              <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding EngineAdminPort}" Minimum="1024" Maximum="65535" FormatString="0" />
+              <TextBlock Grid.Row="3" Classes="muted" Text="{DynamicResource LblMailpitPorts}" VerticalAlignment="Bottom" Margin="0,0,0,17" />
+              <!-- Field captions sit above the inputs -->
+              <Grid Grid.Row="3" Grid.Column="1" ColumnDefinitions="*,24,*">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="SMTP" Classes="muted small" />
+                  <NumericUpDown Value="{Binding MailpitSmtpPort}" Minimum="1024" Maximum="65535" FormatString="0" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="4">
+                  <TextBlock Text="UI" Classes="muted small" />
+                  <NumericUpDown Value="{Binding MailpitUiPort}" Minimum="1024" Maximum="65535" FormatString="0" />
+                </StackPanel>
+              </Grid>
+              <TextBlock Grid.Row="4" Classes="muted" Text="{DynamicResource LblPhpPort}" />
+              <NumericUpDown Grid.Row="4" Grid.Column="1" Value="{Binding PhpFastCgiPort}" Minimum="1024" Maximum="65535" FormatString="0" />
+              <TextBlock Grid.Row="5" Classes="muted" Text="{DynamicResource LblMariaDbPort}" />
+              <NumericUpDown Grid.Row="5" Grid.Column="1" Value="{Binding MariaDbPort}" Minimum="1024" Maximum="65535" FormatString="0" />
+              <TextBlock Grid.Row="6" Classes="muted" Text="{DynamicResource LblMariaDbNetwork}" />
+              <ToggleSwitch Grid.Row="6" Grid.Column="1" IsChecked="{Binding MariaDbNetworkAccess}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="7" Classes="muted" Text="{DynamicResource LblAdminerNetwork}" />
+              <ToggleSwitch Grid.Row="7" Grid.Column="1" IsChecked="{Binding AdminerNetworkAccess}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="8" Classes="muted" Text="{DynamicResource LblDefaultBind}" />
+              <ComboBox Grid.Row="8" Grid.Column="1" ItemsSource="{Binding BindAddressOptions}" SelectedItem="{Binding SelectedBindAddress}" HorizontalAlignment="Stretch" />
+              <TextBlock Grid.Row="9" Classes="muted" Text="{DynamicResource LblDnsSuffix}" />
+              <TextBox Grid.Row="9" Grid.Column="1" Text="{Binding DnsSuffix}" Watermark="company.local" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Paths -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Classes="h2" Text="{DynamicResource HdrPaths}" />
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto,Auto" Classes="settings" IsEnabled="{Binding ServiceSettingsAvailable}">
+              <TextBlock Classes="muted" Text="{DynamicResource LblWwwRoot}" />
+              <Grid Grid.Column="1" ColumnDefinitions="*,Auto">
+                <TextBox Text="{Binding WwwRoot}" Watermark="{DynamicResource WatermarkDefault}" />
+                <Button Grid.Column="1" Classes="icon" Margin="6,0,0,0" Command="{Binding BrowseWwwCommand}" ToolTip.Tip="{DynamicResource BtnBrowse}">
+                  <PathIcon Data="{StaticResource IconFolderOpen}" />
+                </Button>
+              </Grid>
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblEnginePath}" />
+              <Grid Grid.Row="1" Grid.Column="1" ColumnDefinitions="*,Auto">
+                <TextBox Text="{Binding EnginePath}" Watermark="{DynamicResource WatermarkDefault}" />
+                <Button Grid.Column="1" Classes="icon" Margin="6,0,0,0" Command="{Binding BrowseEngineCommand}" ToolTip.Tip="{DynamicResource BtnBrowse}">
+                  <PathIcon Data="{StaticResource IconFolderOpen}" />
+                </Button>
+              </Grid>
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource ChkAutoSites}" />
+              <ToggleSwitch Grid.Row="2" Grid.Column="1" IsChecked="{Binding AutoSites}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- HTTPS: local certificate authority of Caddy; trust once per device -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <PathIcon Data="{StaticResource IconLock}" Width="20" Height="20" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Classes="h2" Text="HTTPS" />
+              <Button Grid.Column="2" Classes="icon small" Command="{Binding RefreshCertCommand}" ToolTip.Tip="{DynamicResource TipRefresh}">
+                <PathIcon Data="{StaticResource IconRefresh}" />
+              </Button>
+            </Grid>
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto" Classes="settings" IsEnabled="{Binding ServiceSettingsAvailable}">
+              <TextBlock Classes="muted" Text="{DynamicResource LblHttpsEnabled}" />
+              <ToggleSwitch Grid.Column="1" IsChecked="{Binding HttpsEnabled}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblRootCert}" />
+              <StackPanel Grid.Row="1" Grid.Column="1" Orientation="Horizontal" Spacing="8">
+                <Border Classes="statepill" Background="{DynamicResource BrushSecondarySoft}" IsVisible="{Binding CertTrusted}">
+                  <TextBlock Text="{DynamicResource CertTrusted}" Foreground="{DynamicResource BrushSecondary}" />
+                </Border>
+                <TextBlock Classes="small" Text="{Binding CertText}" TextWrapping="Wrap" VerticalAlignment="Center" />
+              </StackPanel>
+            </Grid>
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="fixed" Command="{Binding ExportCertCommand}" IsEnabled="{Binding CertAvailable}">
+                <ctl:IconLabel Icon="{StaticResource IconExport}" Text="{DynamicResource BtnExportCert}" />
+              </Button>
+              <Button Classes="danger fixed" Command="{Binding UntrustCertCommand}" IsVisible="{Binding CanUntrust}">
+                <ctl:IconLabel Icon="{StaticResource IconDelete}" Text="{DynamicResource BtnUntrustCert}" />
+              </Button>
+              <Button Classes="primary fixed" Command="{Binding TrustCertCommand}" IsVisible="{Binding CanTrust}">
+                <ctl:IconLabel Icon="{StaticResource IconShield}" Text="{DynamicResource BtnTrustCert}" />
+              </Button>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- Export & import: sites with files, databases and optionally settings as one ZIP -->
+        <Border Classes="card" DataContext="{Binding Transfer}">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+              <PathIcon Data="{StaticResource IconExport}" Width="20" Height="20" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Classes="h2" Text="{DynamicResource HdrTransfer}" />
+              <ProgressBar Grid.Column="2" IsIndeterminate="True" Width="80" MinWidth="0" IsVisible="{Binding IsBusy}" />
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasSites}">
+              <TextBlock Classes="section" Text="{DynamicResource HdrExportSites}" VerticalAlignment="Center" />
+              <Button Grid.Column="1" Classes="fixed" Command="{Binding SelectAllCommand}">
+                <ctl:IconLabel Icon="{StaticResource IconCheck}" Text="{DynamicResource BtnSelectAll}" />
+              </Button>
+            </Grid>
+            <ScrollViewer MaxHeight="220" IsVisible="{Binding HasSites}">
+              <ItemsControl ItemsSource="{Binding Sites}">
+                <ItemsControl.ItemsPanel>
+                  <ItemsPanelTemplate>
+                    <WrapPanel />
+                  </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+                <ItemsControl.ItemTemplate>
+                  <DataTemplate>
+                    <CheckBox IsChecked="{Binding IsSelected}" Content="{Binding Name}" Width="220" Margin="0,0,8,4" />
+                  </DataTemplate>
+                </ItemsControl.ItemTemplate>
+              </ItemsControl>
+            </ScrollViewer>
+            <StackPanel Spacing="6">
+              <CheckBox IsChecked="{Binding IncludeDatabases}" Content="{DynamicResource ChkExportDatabases}" />
+              <CheckBox IsChecked="{Binding IncludePackages}" Content="{DynamicResource ChkExportPackages}" />
+              <CheckBox IsChecked="{Binding IncludeSettings}" Content="{DynamicResource ChkExportSettings}" />
+              <CheckBox IsChecked="{Binding ApplySettings}" Content="{DynamicResource ChkImportSettings}" />
+              <CheckBox IsChecked="{Binding UsePassword}" Content="{DynamicResource ChkExportPassword}" />
+              <StackPanel Orientation="Horizontal" Spacing="10" IsVisible="{Binding UsePassword}" Margin="28,0,0,0">
+                <TextBox Text="{Binding Password}" PasswordChar="•" Watermark="{DynamicResource WatermarkPassword}" Width="220" />
+                <TextBox Text="{Binding PasswordRepeat}" PasswordChar="•" Watermark="{DynamicResource WatermarkPasswordRepeat}" Width="220" />
+              </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="fixed" Command="{Binding ImportCommand}" IsEnabled="{Binding !IsBusy}">
+                <ctl:IconLabel Icon="{StaticResource IconImport}" Text="{DynamicResource BtnImport}" />
+              </Button>
+              <Button Classes="primary fixed" Command="{Binding ExportCommand}" IsEnabled="{Binding !IsBusy}">
+                <ctl:IconLabel Icon="{StaticResource IconExport}" Text="{DynamicResource BtnExportSites}" />
+              </Button>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+
+        <!-- MariaDB backups: manual on the Databases page, scheduled here (off by default) -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="Auto,*">
+              <PathIcon Data="{StaticResource IconBackup}" Width="20" Height="20" Foreground="{DynamicResource BrushAccentHover}" Margin="0,0,10,0" />
+              <TextBlock Grid.Column="1" Classes="h2" Text="{DynamicResource HdrDbBackups}" />
+            </Grid>
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto,Auto" Classes="settings" IsEnabled="{Binding ServiceSettingsAvailable}">
+              <TextBlock Classes="muted" Text="{DynamicResource LblDbBackupAuto}" />
+              <ToggleSwitch Grid.Column="1" IsChecked="{Binding DbBackupEnabled}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblDbBackupInterval}" />
+              <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding DbBackupInterval}" Minimum="1" Maximum="720" FormatString="0"
+                             IsEnabled="{Binding DbBackupEnabled}" />
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblDbBackupKeep}" />
+              <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding DbBackupKeep}" Minimum="1" Maximum="365" FormatString="0"
+                             IsEnabled="{Binding DbBackupEnabled}" />
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- PHP: limits and extensions (php.ini is generated; PHP restarts on save) -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Classes="h2" Text="PHP" />
+              <TextBlock Grid.Column="1" Classes="muted small" Text="{Binding PhpVersionText}" VerticalAlignment="Center" />
+            </Grid>
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" Classes="settings" IsEnabled="{Binding ServiceSettingsAvailable}">
+              <TextBlock Classes="muted" Text="{DynamicResource LblPhpMemory}" />
+              <TextBox Grid.Column="1" Text="{Binding PhpMemoryLimit}" Watermark="512M" />
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblPhpUpload}" />
+              <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding PhpUploadMax}" Watermark="128M" />
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblPhpPost}" />
+              <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding PhpPostMax}" Watermark="128M" />
+              <TextBlock Grid.Row="3" Classes="muted" Text="{DynamicResource LblPhpTime}" />
+              <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding PhpMaxExecution}" Minimum="0" Maximum="3600" FormatString="0" />
+              <TextBlock Grid.Row="4" Classes="muted" Text="{DynamicResource LblPhpDisplayErrors}" />
+              <ToggleSwitch Grid.Row="4" Grid.Column="1" IsChecked="{Binding PhpDisplayErrors}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="5" Classes="muted" Text="OPcache" />
+              <ToggleSwitch Grid.Row="5" Grid.Column="1" IsChecked="{Binding PhpOpcache}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="6" Classes="muted" Text="{DynamicResource LblXdebugPort}" />
+              <NumericUpDown Grid.Row="6" Grid.Column="1" Value="{Binding PhpXdebugPort}" Minimum="1024" Maximum="65535" FormatString="0" />
+            </Grid>
+            <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasPhpExtensions}">
+              <TextBlock Classes="section" Text="{DynamicResource HdrPhpExtensions}" VerticalAlignment="Center" />
+              <Button Grid.Column="1" Command="{Binding ResetPhpExtensionsCommand}">
+                <ctl:IconLabel Icon="{StaticResource IconUndo}" Text="{DynamicResource BtnDefaults}" />
+              </Button>
+            </Grid>
+            <ItemsControl ItemsSource="{Binding PhpExtensions}" IsVisible="{Binding HasPhpExtensions}" IsEnabled="{Binding ServiceSettingsAvailable}">
+              <ItemsControl.ItemsPanel>
+                <ItemsPanelTemplate>
+                  <WrapPanel />
+                </ItemsPanelTemplate>
+              </ItemsControl.ItemsPanel>
+              <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                  <CheckBox IsChecked="{Binding IsOn}" Content="{Binding Name}" Width="170" Margin="0,0,8,4" />
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+        </Border>
+
+        <!-- Logs -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Classes="h2" Text="{DynamicResource HdrLogs}" />
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto,Auto" Classes="settings">
+              <TextBlock Classes="muted" Text="{DynamicResource LblServiceLog}" />
+              <ToggleSwitch Grid.Column="1" IsChecked="{Binding ServiceLog}" IsEnabled="{Binding ServiceSettingsAvailable}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblLogLevel}" />
+              <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding LogLevels}" SelectedItem="{Binding LogLevel}"
+                        HorizontalAlignment="Stretch" IsEnabled="{Binding ServiceSettingsAvailable}" />
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblAccessLogs}" />
+              <ToggleSwitch Grid.Row="2" Grid.Column="1" IsChecked="{Binding AccessLogs}" IsEnabled="{Binding ServiceSettingsAvailable}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="3" Classes="muted" Text="{DynamicResource LblModuleLogs}" />
+              <ToggleSwitch Grid.Row="3" Grid.Column="1" IsChecked="{Binding ModuleLogs}" IsEnabled="{Binding ServiceSettingsAvailable}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="4" Classes="muted" Text="{DynamicResource LblLogRotation}" VerticalAlignment="Bottom" Margin="0,0,0,17" />
+              <Grid Grid.Row="4" Grid.Column="1" ColumnDefinitions="*,24,*" IsEnabled="{Binding ServiceSettingsAvailable}">
+                <StackPanel Spacing="4">
+                  <TextBlock Text="{DynamicResource LblLogMaxSize}" Classes="muted small" />
+                  <NumericUpDown Value="{Binding LogMaxSizeMb}" Minimum="1" Maximum="500" FormatString="0" />
+                </StackPanel>
+                <StackPanel Grid.Column="2" Spacing="4">
+                  <TextBlock Text="{DynamicResource LblLogKeep}" Classes="muted small" />
+                  <NumericUpDown Value="{Binding LogKeep}" Minimum="0" Maximum="50" FormatString="0" />
+                </StackPanel>
+              </Grid>
+              <TextBlock Grid.Row="5" Classes="muted" Text="{DynamicResource LblLogRefresh}" />
+              <ComboBox Grid.Row="5" Grid.Column="1" ItemsSource="{Binding RefreshIntervals}" SelectedItem="{Binding LogRefreshSeconds}" HorizontalAlignment="Stretch">
+                <ComboBox.ItemTemplate>
+                  <DataTemplate>
+                    <TextBlock Text="{Binding StringFormat='{}{0} s'}" />
+                  </DataTemplate>
+                </ComboBox.ItemTemplate>
+              </ComboBox>
+              <StackPanel Grid.Row="6" Grid.ColumnSpan="2" Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right" Margin="0,4,0,0">
+                <Button Classes="danger fixed" Command="{Binding ClearLogsCommand}" IsEnabled="{Binding ServiceSettingsAvailable}">
+                  <ctl:IconLabel Icon="{StaticResource IconDelete}" Text="{DynamicResource BtnClearLogs}" />
+                </Button>
+                <Button Classes="fixed" Command="{Binding OpenLogsFolderCommand}">
+                  <ctl:IconLabel Icon="{StaticResource IconFolderOpen}" Text="{DynamicResource BtnOpenLogsFolder}" />
+                </Button>
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Notifications (bottom right) -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <TextBlock Classes="h2" Text="{DynamicResource HdrNotifications}" />
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Classes="settings">
+              <TextBlock Classes="muted" Text="{DynamicResource LblNotifications}" />
+              <ToggleSwitch Grid.Column="1" IsChecked="{Binding NotificationsEnabled}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblNotificationsErrorsOnly}" />
+              <ToggleSwitch Grid.Row="1" Grid.Column="1" IsChecked="{Binding NotificationsErrorsOnly}" IsEnabled="{Binding NotificationsEnabled}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+              <TextBlock Grid.Row="2" Classes="muted" Text="{DynamicResource LblToastSeconds}" />
+              <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding ToastSeconds}" Minimum="1" Maximum="60" Increment="0.5" FormatString="0.#"
+                             IsEnabled="{Binding NotificationsEnabled}" />
+              <TextBlock Grid.Row="3" Classes="muted" Text="{DynamicResource LblErrorToastSeconds}" />
+              <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding ErrorToastSeconds}" Minimum="1" Maximum="120" Increment="1" FormatString="0"
+                             IsEnabled="{Binding NotificationsEnabled}" />
+              <StackPanel Grid.Row="4" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,4,0,0">
+                <Button Classes="fixed" Command="{Binding TestNotificationCommand}">
+                  <ctl:IconLabel Icon="{StaticResource IconInfo}" Text="{DynamicResource BtnTestNotification}" />
+                </Button>
+              </StackPanel>
+            </Grid>
+          </StackPanel>
+        </Border>
+
+        <!-- Message template -->
+        <Border Classes="card">
+          <StackPanel Spacing="12">
+            <Grid ColumnDefinitions="*,Auto">
+              <TextBlock Classes="h2" Text="{DynamicResource HdrMessageTemplate}" VerticalAlignment="Center" />
+              <Button Grid.Column="1" Classes="fixed" Command="{Binding ResetTemplateCommand}">
+                <ctl:IconLabel Icon="{StaticResource IconUndo}" Text="{DynamicResource BtnResetTemplate}" />
+              </Button>
+            </Grid>
+            <TextBox Text="{Binding MessageTemplate}" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="170" />
+          </StackPanel>
+        </Border>
+
+        <!-- Management: service, desktop mode, installation -->
+        <Border Classes="card" IsVisible="{Binding IsWindows}">
+          <StackPanel Spacing="12">
+            <TextBlock Classes="h2" Text="{DynamicResource HdrManagement}" />
+            <Grid ColumnDefinitions="*,320" RowDefinitions="Auto,Auto" Classes="settings">
+              <TextBlock Classes="muted" Text="{DynamicResource LblServiceState}" />
+              <Border Grid.Column="1" Classes="pill" HorizontalAlignment="Right"
+                      Background="{Binding ServiceStateBackground}" BorderBrush="{Binding ServiceStateBrush}" BorderThickness="1">
+                <TextBlock Classes="small" Text="{Binding ServiceStateText}" Foreground="{Binding ServiceStateBrush}" FontWeight="SemiBold" />
+              </Border>
+              <!-- Desktop mode on/off (not available while the Windows service is installed) -->
+              <TextBlock Grid.Row="1" Classes="muted" Text="{DynamicResource LblDesktopMode}" />
+              <ToggleSwitch Grid.Row="1" Grid.Column="1" IsChecked="{Binding DesktopModeSwitch}" IsEnabled="{Binding CanSwitchDesktopMode}"
+                            OnContent="{DynamicResource On}" OffContent="{DynamicResource Off}" />
+            </Grid>
+            <!-- Row 1: service control -->
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="fixed" Command="{Binding Main.UninstallServiceCommand}" IsVisible="{Binding IsServiceInstalled}">
+                <ctl:IconLabel Icon="{StaticResource IconDelete}" Text="{DynamicResource BtnUninstall}" />
+              </Button>
+              <Button Classes="fixed" Command="{Binding Main.RestartServiceCommand}" IsVisible="{Binding IsServiceInstalled}">
+                <ctl:IconLabel Icon="{StaticResource IconRestart}" Text="{DynamicResource BtnRestart}" />
+              </Button>
+              <Button Classes="danger fixed" Command="{Binding StopServiceCommand}" IsEnabled="{Binding CanStopService}">
+                <ctl:IconLabel Icon="{StaticResource IconStop}" Text="{DynamicResource BtnStop}" />
+              </Button>
+              <Button Classes="success fixed" Command="{Binding StartServiceCommand}" IsEnabled="{Binding CanStartService}">
+                <ctl:IconLabel Icon="{StaticResource IconPlay}" Text="{DynamicResource BtnStart}" />
+              </Button>
+            </StackPanel>
+            <Border Classes="divider" />
+            <!-- Row 2: settings folder, uninstall WEBit, install service -->
+            <StackPanel Orientation="Horizontal" Spacing="8" HorizontalAlignment="Right">
+              <Button Classes="fixed" Command="{Binding OpenAppDataFolderCommand}">
+                <ctl:IconLabel Icon="{StaticResource IconFolder}" Text="{DynamicResource BtnOpenSettingsFolder}" />
+              </Button>
+              <Button Classes="danger fixed" Command="{Binding Main.UninstallWebitCommand}">
+                <ctl:IconLabel Icon="{StaticResource IconDelete}" Text="{DynamicResource BtnUninstallApp}" />
+              </Button>
+              <Button Classes="primary fixed" Command="{Binding Main.InstallServiceCommand}" IsVisible="{Binding !IsServiceInstalled}">
+                <ctl:IconLabel Icon="{StaticResource IconShield}" Text="{DynamicResource BtnMgmtInstallService}" />
+              </Button>
+            </StackPanel>
+          </StackPanel>
+        </Border>
+      </StackPanel>
+    </ScrollViewer>
+  </DockPanel>
+</UserControl>
